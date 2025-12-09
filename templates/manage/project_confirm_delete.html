@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Delete Project{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:600px;">
+    <h1>Delete Project</h1>
+    <p>Are you sure you want to delete "<strong>{{ object.title }}</strong>"? This action cannot be undone.</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button class="btn" type="submit">Yes, delete</button>
+      <a class="btn ghost" href="{% url 'portfolio_app:manage_projects_list' %}">Cancel</a>
+    </form>
+  </div>
+</section>
+{% endblock %}

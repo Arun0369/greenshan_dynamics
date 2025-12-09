@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — GreenShan{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h1>Admin Dashboard</h1>
+      <div><a class="btn ghost" href="{% url 'two_factor:logout' %}">Sign out</a></div>
+    </div>
+
+    <div class="cards-grid" style="margin-top:18px;">
+      <div class="card" data-animate>
+        <div class="counter" data-target="{{ projects_count }}">0</div>
+        <div class="muted">Projects</div>
+      </div>
+      <div class="card" data-animate>
+        <div class="counter" data-target="{{ media_count }}">0</div>
+        <div class="muted">Media Files</div>
+      </div>
+      <div class="card" data-animate>
+        <div class="counter" data-target="{{ testimonials_count }}">0</div>
+        <div class="muted">Testimonials</div>
+      </div>
+      <div class="card" data-animate>
+        <div class="counter" data-target="{{ messages_count }}">0</div>
+        <div class="muted">New Messages</div>
+      </div>
+    </div>
+
+    <div style="margin-top:22px;">
+      <a class="btn" href="{% url 'portfolio_app:manage_projects_list' %}">Manage Projects</a>
+      <a class="btn ghost" href="{% url 'admin:index' %}">Open Django Admin</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

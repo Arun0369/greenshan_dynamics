@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home — GreenShan{% endblock %}
+{% block content %}
+<section class="hero-section" data-animate>
+  <div class="container hero-inner">
+    <div class="hero-left">
+      <h1>GreenShan Dynamics</h1>
+      <p class="lead">Sustainable Visual Media. Professional Editing. Dynamic Storytelling.</p>
+      <div class="cta">
+        <a href="{% url 'portfolio_app:portfolio_list' %}" class="btn">Our Work</a>
+        <a href="{% url 'portfolio_app:public_contact' %}" class="btn ghost">Contact</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <img src="{% static 'img/portfolio-hero.jpg' %}" alt="Hero" class="hero-profile-img">
+    </div>
+  </div>
+</section>
+
+<section class="section services-preview" data-animate>
+  <div class="container">
+    <h2 class="section-title">What We Do</h2>
+    <div class="cards-grid">
+      {% for s in Service.objects.all %}
+        <article class="card">
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.summary }}</p>
+        </article>
+      {% empty %}
+        <article class="card"><h3>Video Editing</h3><p>Professional storytelling with smooth transitions, sound design & color correction.</p></article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section portfolio-preview" data-animate>
+  <div class="container">
+    <h2 class="section-title">Selected Works</h2>
+    <div class="refined-grid">
+      {% for p in featured_projects %}
+        <article class="portfolio-card">
+         <div class="card-media"style="background-image:url('{% if p.cover %}{{ p.cover.url }}{% else %}{% static "img/placeholder.jpg" %}{% endif %}')"></div>
+
+          <div class="card-body">
+            <h3>{{ p.title }}</h3>
+            <p class="meta">{{ p.client }}</p>
+            <a class="btn ghost small" href="{% url 'portfolio_app:project_detail' p.slug %}">Open</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

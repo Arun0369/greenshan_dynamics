@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}GreenShan Dynamics{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script defer src="{% static 'js/main.js' %}"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{% url 'portfolio_app:home' %}">
+        <img src="{% static 'img/logo.png' %}" alt="GreenShan Logo" class="site-logo">
+      </a>
+      <nav class="main-nav" id="main-nav">
+        <ul>
+          <li><a href="{% url 'portfolio_app:home' %}">Home</a></li>
+          <li><a href="{% url 'portfolio_app:portfolio_list' %}">Portfolio</a></li>
+          <li><a href="{% url 'portfolio_app:public_contact' %}">Contact</a></li>
+          <li><a href="{% url 'portfolio_app:manage_dashboard' %}">Dashboard</a></li>
+        </ul>
+
+        <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Toggle navigation">☰</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% if messages %}
+      <div class="container messages">
+        {% for m in messages %}
+          <div class="toast show">{{ m }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© {% now "Y" %} GreenShan Dynamics — All Rights Reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ project.title }} — GreenShan Dynamics{% endblock %}
+
+{% block content %}
+
+<section class="section project-hero" data-animate>
+    <div class="container">
+
+        <h1>{{ project.title }}</h1>
+
+        <p class="meta">
+            {% if project.client %}
+                <strong>Client:</strong> {{ project.client }}
+            {% endif %}
+            {% if project.year %}
+                &nbsp; • &nbsp;
+                <strong>Year:</strong> {{ project.year }}
+            {% endif %}
+        </p>
+
+        {% if project.cover %}
+            <div class="project-cover">
+                <img src="{{ project.cover.url }}" alt="{{ project.title }}">
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+
+<section class="section project-body">
+    <div class="container">
+        <h2 class="section-title" data-animate>Project Description</h2>
+
+        <div class="project-description" data-animate>
+            {{ project.description|linebreaks }}
+        </div>
+
+        <div class="project-actions" style="margin-top:32px">
+            <a href="{% url 'portfolio' %}" class="btn ghost">← Back to Portfolio</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

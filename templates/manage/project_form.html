@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{% if is_create %}Add Project{% else %}Edit Project{% endif %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:980px;">
+    <h1>{% if is_create %}Add Project{% else %}Edit Project{% endif %}</h1>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <div style="display:grid; grid-template-columns: 1fr 320px; gap:18px;">
+        <div>
+          {{ form.non_field_errors }}
+          <div>
+            {{ form.title.label_tag }}<br>{{ form.title }}
+          </div>
+          <div>
+            {{ form.slug.label_tag }}<br>{{ form.slug }}
+          </div>
+          <div>
+            {{ form.client.label_tag }}<br>{{ form.client }}
+          </div>
+          <div>
+            {{ form.project_date.label_tag }}<br>{{ form.project_date }}
+          </div>
+          <div>
+            {{ form.location.label_tag }}<br>{{ form.location }}
+          </div>
+          <div>
+            {{ form.category.label_tag }}<br>{{ form.category }}
+          </div>
+          <div>
+            {{ form.cover.label_tag }}<br>{{ form.cover }}
+            {% if project and project.cover %}
+              <div style="margin-top:8px;">
+                <img src="{{ project.cover.url }}" alt="{{ project.title }}" style="max-width:200px;">
+              </div>
+            {% endif %}
+          </div>
+
+          <div style="margin-top:12px;">
+            {{ form.description.label_tag }}<br>{{ form.description }}
+          </div>
+
+          <div style="margin-top:12px;">
+            {{ form.experience_notes.label_tag }}<br>{{ form.experience_notes }}
+          </div>
+        </div>
+
+        <aside>
+          <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:8px;">
+            <h3>Media</h3>
+            {{ formset.management_form }}
+            {% for f in formset.forms %}
+              <div style="margin-bottom:8px; border-bottom:1px dashed rgba(255,255,255,0.03); padding-bottom:6px;">
+                {% if f.instance.pk %}
+                  <div style="margin-bottom:6px;">
+                    <img src="{{ f.instance.file.url }}" alt="{{ f.instance.caption|default:'' }}" style="max-width:160px;">
+                  </div>
+                {% endif %}
+                {{ f.file.label_tag }}<br>{{ f.file }}
+                {{ f.caption.label_tag }}<br>{{ f.caption }}
+                {{ f.order.label_tag }}<br>{{ f.order }}
+                {{ f.DELETE }} Delete
+              </div>
+            {% endfor %}
+            <p class="muted">Add up to 10 media items. Reorder with 'order'.</p>
+          </div>
+
+          <div style="margin-top:12px;">
+            {{ form.featured.label_tag }} {{ form.featured }}
+          </div>
+
+          <div style="margin-top:18px;">
+            <button class="btn" type="submit">Save</button>
+            <a class="btn ghost" href="{% url 'portfolio_app:manage_projects_list' %}">Cancel</a>
+          </div>
+        </aside>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

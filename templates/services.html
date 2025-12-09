@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Services — GreenShan{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1>Services</h1>
+    <div class="cards-grid">
+      {% for s in Service.objects.all %}
+        <article class="card"><h3>{{ s.title }}</h3><p>{{ s.summary }}</p></article>
+      {% empty %}
+        <article class="card"><h3>Post-production</h3><p>High quality editing, grading and VFX.</p></article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
