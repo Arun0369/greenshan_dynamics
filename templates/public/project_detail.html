@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ project.title }} — GreenShan Dynamics{% endblock %}
+
+{% block content %}
+
+<!-- ================= PROJECT HERO ================= -->
+<section class="section project-hero" data-animate>
+  <div class="container">
+
+    <h1>{{ project.title }}</h1>
+
+    <p class="meta">
+      {% if project.client %}
+        {{ project.client }}
+      {% endif %}
+      {% if project.client and project.project_date %} • {% endif %}
+      {% if project.project_date %}
+        {{ project.project_date|date:"Y" }}
+      {% endif %}
+    </p>
+
+    {% if project.cover %}
+      <img
+        src="{{ project.cover.url }}"
+        alt="{{ project.title }}"
+        class="hero-profile-img"
+        loading="lazy"
+      >
+    {% endif %}
+
+  </div>
+</section>
+
+<!-- ================= PROJECT BODY ================= -->
+<section class="section project-body">
+  <div class="container">
+
+    <h2>Project Description</h2>
+    <div class="project-description">
+      {{ project.description|linebreaks }}
+    </div>
+
+    {% if project.experience_notes %}
+      <h3 class="section-subtitle">Experience</h3>
+      <div class="project-experience">
+        {{ project.experience_notes|linebreaks }}
+      </div>
+    {% endif %}
+
+    <!-- ================= MEDIA ================= -->
+    <h3 class="section-subtitle">Media</h3>
+
+    <div class="gallery-grid">
+      {% for m in project.media.all %}
+        <figure class="gallery-item">
+
+          {% if m.is_image %}
+            <img
+              src="{{ m.file.url }}"
+              alt="{{ m.caption|default:project.title }}"
+              loading="lazy"
+              class="gallery-img"
+            >
+
+          {% elif m.is_video %}
+            <video
+              controls
+              preload="metadata"
+              class="media-video"
+            >
+              <source src="{{ m.file.url }}">
+              Your browser does not support the video element.
+            </video>
+
+          {% elif m.is_audio %}
+            <audio controls class="media-audio">
+              <source src="{{ m.file.url }}">
+              Your browser does not support the audio element.
+            </audio>
+
+          {% elif m.is_document %}
+            <a
+              href="{{ m.file.url }}"
+              target="_blank"
+              rel="noopener"
+              class="media-document"
+            >
+              {{ m.filename }}
+            </a>
+
+            {# ✅ SAFE PDF PREVIEW (NO endswith FILTER) #}
+            {% if ".pdf" in m.filename|lower %}
+              <iframe
+                src="{{ m.file.url }}"
+                class="media-pdf"
+                loading="lazy"
+              ></iframe>
+            {% endif %}
+
+          {% else %}
+            <a
+              href="{{ m.file.url }}"
+              target="_blank"
+              rel="noopener"
+            >
+              {{ m.filename }}
+            </a>
+          {% endif %}
+
+          {% if m.caption %}
+            <figcaption>{{ m.caption }}</figcaption>
+          {% endif %}
+
+        </figure>
+      {% empty %}
+        <p class="muted">No media added for this project.</p>
+      {% endfor %}
+    </div>
+
+    <!-- ================= BACK ================= -->
+    <div class="section-actions" style="margin-top:20px">
+      <a class="btn ghost" href="{% url 'greenshan:portfolio' %}">
+        ← Back to Portfolio
+      </a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

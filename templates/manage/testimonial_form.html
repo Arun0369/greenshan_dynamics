@@ -1,0 +1,16 @@
+{% extends "base.html" %} {% block title %}Edit Testimonial{% endblock %} {%
+block content %}
+<section class="section">
+  <div class="container" style="max-width: 600px">
+    <h1>Edit Testimonial</h1>
+
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <button class="btn" type="submit">Save</button>
+      <a class="btn ghost" href="{% url 'greenshan:manage_testimonials' %}">
+        Cancel
+      </a>
+    </form>
+  </div>
+</section>
+{% endblock %}

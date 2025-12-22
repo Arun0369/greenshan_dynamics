@@ -1,122 +1,290 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, DeleteView
+from django.views import View
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.db import transaction
+from django.core.exceptions import ValidationError
+
 from .models import Project, Testimonial, Service, ContactRequest, ProjectMedia
-from .forms import ProjectForm, ProjectMediaFormSet
-from django.views.generic import DeleteView
+from .forms import (
+    ProjectForm,
+    ProjectMediaFormSet,
+    TestimonialForm,
+)
+
+# ======================================================================
+# PUBLIC VIEWS
+# ======================================================================
+
+def home(request):
+    services = Service.objects.all().order_by("order")
+    featured_projects = Project.objects.filter(featured=True).prefetch_related("media")
+    return render(request, "index.html", {
+        "services": services,
+        "featured_projects": featured_projects,
+    })
+
+
+def about(request):
+    return render(request, "public/about.html")
+
+
+def services(request):
+    services = Service.objects.all().order_by("order")
+    return render(request, "public/services.html", {"services": services})
+
+
+def portfolio(request):
+    projects = Project.objects.prefetch_related("media")
+    return render(request, "public/portfolio_list.html", {"projects": projects})
+
+
+class ProjectDetailView(DetailView):
+    model = Project
+    template_name = "public/project_detail.html"
+    slug_field = "slug"
+    context_object_name = "project"
+
+    def get_queryset(self):
+        return Project.objects.prefetch_related("media")
+
+# ======================================================================
+# CONTACT VIEW
+# ======================================================================
+
+class ContactView(View):
+    template_name = "public/contact.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        name = request.POST.get("name", "").strip()
+        email = request.POST.get("email", "").strip()
+        subject = request.POST.get("subject", "").strip()
+        message = request.POST.get("message", "").strip()
+
+        if not name or not email or not message:
+            messages.error(request, "All required fields must be filled.")
+            return redirect("greenshan:contact")
+
+        ContactRequest.objects.create(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message,
+        )
+        messages.success(request, "Message sent successfully.")
+        return redirect("greenshan:contact")
+
+
+contact = ContactView.as_view()
+
+# ======================================================================
+# STAFF / MANAGEMENT HELPERS
+# ======================================================================
 
 def is_staff_user(user):
     return user.is_authenticated and user.is_staff
 
-# Public views
-class HomeView(ListView):
-    template_name = 'public/home.html'
-    model = Project
-    context_object_name = 'featured_projects'
-    queryset = Project.objects.filter(featured=True)[:6]
 
-class PortfolioListView(ListView):
-    template_name = 'public/portfolio_list.html'
-    model = Project
-    context_object_name = 'projects'
-    paginate_by = 12
+def staff_required(view_func):
+    return login_required(
+        user_passes_test(is_staff_user)(view_func),
+        login_url="/accounts/login/",
+    )
 
-class ProjectDetailView(DetailView):
-    template_name = 'public/project_detail.html'
-    model = Project
-    slug_field = 'slug'
-    context_object_name = 'project'
-
-class ContactView(View):
-    def get(self, request):
-        return render(request, 'public/contact.html')
-    def post(self, request):
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        subj = request.POST.get('subject','')
-        msg = request.POST.get('message','')
-        if not name or not email or not msg:
-            messages.error(request, 'Please complete all required fields.')
-            return redirect('portfolio_app:public_contact')
-        ContactRequest.objects.create(name=name,email=email,subject=subj,message=msg)
-        messages.success(request, 'Thanks — we received your message.')
-        return redirect('portfolio_app:public_contact')
-
-# Manage - staff only
-staff_required = user_passes_test(is_staff_user, login_url=reverse_lazy('two_factor:login'))
+# ======================================================================
+# STAFF / MANAGEMENT VIEWS
+# ======================================================================
 
 @staff_required
 def manage_dashboard(request):
-    projects_count = Project.objects.count()
-    media_count = ProjectMedia.objects.count()
-    testimonials_count = Testimonial.objects.filter(visible=True).count()
-    messages_count = ContactRequest.objects.filter(handled=False).count()
-    context = {'projects_count': projects_count, 'media_count': media_count, 'testimonials_count': testimonials_count, 'messages_count': messages_count}
-    return render(request, 'manage/dashboard.html', context)
+    context = {
+        "projects_count": Project.objects.count(),
+        "media_count": ProjectMedia.objects.count(),
+        "testimonials_count": Testimonial.objects.filter(visible=True).count(),
+        "messages_count": ContactRequest.objects.filter(handled=False).count(),
+    }
+    return render(request, "manage/dashboard.html", context)
 
-@method_decorator(staff_required, name='dispatch')
+
+@method_decorator(staff_required, name="dispatch")
 class ManageProjectListView(ListView):
-    template_name = 'manage/projects_list.html'
     model = Project
-    context_object_name = 'projects'
+    template_name = "manage/projects_list.html"
+    context_object_name = "projects"
     paginate_by = 20
 
-@method_decorator(staff_required, name='dispatch')
+    def get_queryset(self):
+        return Project.objects.order_by("-created")
+
+
+@method_decorator(staff_required, name="dispatch")
 class ManageProjectCreateView(View):
-    template_name = 'manage/project_form.html'
+    template_name = "manage/project_form.html"
+
     def get(self, request):
-        form = ProjectForm()
-        formset = ProjectMediaFormSet()
-        return render(request, self.template_name, {'form': form, 'formset': formset, 'is_create': True})
+        return render(request, self.template_name, {
+            "form": ProjectForm(),
+            "formset": ProjectMediaFormSet(),
+            "is_create": True,
+        })
+
     def post(self, request):
         form = ProjectForm(request.POST, request.FILES)
-        if form.is_valid():
-            project = form.save()
-            formset = ProjectMediaFormSet(request.POST, request.FILES, instance=project)
-            if formset.is_valid():
-                total_files = sum(1 for f in formset.cleaned_data if f and not f.get('DELETE', False))
-                if total_files > 10:
-                    project.delete()
-                    messages.error(request, 'Maximum 10 media files per project allowed.')
-                    return render(request, self.template_name, {'form': form, 'formset': formset, 'is_create': True})
-                formset.save()
-                messages.success(request, 'Project created.')
-                return redirect('portfolio_app:manage_projects_list')
-            else:
-                project.delete()
-        else:
-            formset = ProjectMediaFormSet(request.POST, request.FILES)
-        return render(request, self.template_name, {'form': form, 'formset': formset, 'is_create': True})
 
-@method_decorator(staff_required, name='dispatch')
+        if form.is_valid():
+            with transaction.atomic():
+                project = form.save()
+                formset = ProjectMediaFormSet(request.POST, request.FILES, instance=project)
+
+                if formset.is_valid():
+                    total_files = sum(
+                        1 for f in formset.cleaned_data if f and not f.get("DELETE", False)
+                    )
+
+                    if total_files > 10:
+                        raise ValidationError("Maximum 10 media files allowed.")
+
+                    formset.save()
+                    messages.success(request, "Project created successfully.")
+                    return redirect("greenshan:manage_projects")
+
+        return render(request, self.template_name, {
+            "form": form,
+            "formset": ProjectMediaFormSet(),
+            "is_create": True,
+        })
+
+
+@method_decorator(staff_required, name="dispatch")
 class ManageProjectUpdateView(View):
-    template_name = 'manage/project_form.html'
+    template_name = "manage/project_form.html"
+
     def get(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
-        form = ProjectForm(instance=project)
-        formset = ProjectMediaFormSet(instance=project)
-        return render(request, self.template_name, {'form': form, 'formset': formset, 'project': project, 'is_create': False})
+        return render(request, self.template_name, {
+            "form": ProjectForm(instance=project),
+            "formset": ProjectMediaFormSet(instance=project),
+            "project": project,
+            "is_create": False,
+        })
+
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
         form = ProjectForm(request.POST, request.FILES, instance=project)
         formset = ProjectMediaFormSet(request.POST, request.FILES, instance=project)
-        if form.is_valid() and formset.is_valid():
-            total_files = sum(1 for f in formset.cleaned_data if f and not f.get('DELETE', False))
-            if total_files > 10:
-                messages.error(request, 'Maximum 10 media files per project allowed.')
-                return render(request, self.template_name, {'form': form, 'formset': formset, 'project': project, 'is_create': False})
-            form.save()
-            formset.save()
-            messages.success(request, 'Project updated.')
-            return redirect('portfolio_app:manage_projects_list')
-        return render(request, self.template_name, {'form': form, 'formset': formset, 'project': project, 'is_create': False})
 
-@method_decorator(staff_required, name='dispatch')
+        if form.is_valid() and formset.is_valid():
+            with transaction.atomic():
+                existing_count = project.media.count()
+                new_files = sum(
+                    1 for f in formset.cleaned_data if f and not f.get("DELETE", False)
+                )
+
+                if existing_count + new_files > 10:
+                    messages.error(request, "Maximum 10 media files allowed.")
+                else:
+                    form.save()
+                    formset.save()
+                    messages.success(request, "Project updated successfully.")
+                    return redirect("greenshan:manage_projects")
+
+        return render(request, self.template_name, {
+            "form": form,
+            "formset": formset,
+            "project": project,
+            "is_create": False,
+        })
+
+
+@method_decorator(staff_required, name="dispatch")
 class ManageProjectDeleteView(DeleteView):
     model = Project
-    template_name = 'manage/project_confirm_delete.html'
-    success_url = reverse_lazy('portfolio_app:manage_projects_list')
+    template_name = "manage/project_confirm_delete.html"
+    success_url = reverse_lazy("greenshan:manage_projects")
+
+# ======================================================================
+# TESTIMONIAL MANAGEMENT
+# ======================================================================
+
+@method_decorator(staff_required, name="dispatch")
+class ManageTestimonialListView(View):
+    template_name = "manage/testimonials.html"
+
+    def get(self, request):
+        testimonials = Testimonial.objects.order_by("-created")
+        form = TestimonialForm()
+        return render(request, self.template_name, {
+            "testimonials": testimonials,
+            "form": form,
+        })
+
+    def post(self, request):
+        form = TestimonialForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Testimonial added successfully.")
+        else:
+            messages.error(request, "Failed to add testimonial.")
+        return redirect("greenshan:manage_testimonials")
+
+
+@staff_required
+def toggle_testimonial_visibility(request, pk):
+    testimonial = get_object_or_404(Testimonial, pk=pk)
+    testimonial.visible = not testimonial.visible
+    testimonial.save()
+    messages.success(request, "Testimonial visibility updated.")
+    return redirect("greenshan:manage_testimonials")
+
+
+@staff_required
+def delete_testimonial(request, pk):
+    testimonial = get_object_or_404(Testimonial, pk=pk)
+    testimonial.delete()
+    messages.success(request, "Testimonial deleted.")
+    return redirect("greenshan:manage_testimonials")
+
+# ======================================================================
+# CONTACT MESSAGE MANAGEMENT
+# ======================================================================
+
+@method_decorator(staff_required, name="dispatch")
+class ManageContactListView(ListView):
+    model = ContactRequest
+    template_name = "manage/messages.html"
+    context_object_name = "messages"
+
+    def get_queryset(self):
+        return ContactRequest.objects.order_by("-created")
+
+
+@method_decorator(staff_required, name="dispatch")
+class ManageContactDetailView(View):
+    template_name = "manage/message_detail.html"
+
+    def get(self, request, pk):
+        message = get_object_or_404(ContactRequest, pk=pk)
+        return render(request, self.template_name, {"message": message})
+
+
+@staff_required
+def mark_contact_handled(request, pk):
+    message = get_object_or_404(ContactRequest, pk=pk)
+    message.handled = True
+    message.save()
+    messages.success(request, "Message marked as handled.")
+    return redirect("greenshan:manage_messages")
+
+
+@staff_required
+def delete_contact_message(request, pk):
+    message = get_object_or_404(ContactRequest, pk=pk)
+    message.delete()
+    messages.success(request, "Message deleted.")
+    return redirect("greenshan:manage_messages")

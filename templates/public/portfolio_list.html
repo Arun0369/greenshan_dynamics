@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Portfolio — GreenShan Dynamics{% endblock %}
+
+{% block content %}
+
+<!-- Portfolio hero -->
+<section class="portfolio-hero-2col section" data-animate>
+  <div class="container portfolio-hero-grid">
+
+    <div class="hero-image-wrap" data-animate>
+      <img src="{% static 'img/portfolio-hero.jpg' %}"
+           alt="Portfolio hero"
+           class="hero-profile-img">
+    </div>
+
+    <div class="hero-content" data-animate>
+      <small class="muted">Selected Works</small>
+      <h1>About Myself</h1>
+      <p class="lead">
+        A handpicked selection of our most polished edits, motion pieces,
+        and branded films. Each project highlights creative direction,
+        color grading and storytelling precision.
+      </p>
+
+      <div class="hero-cta">
+        <a class="btn" href="{% url 'greenshan:contact' %}">Hire Us</a>
+        <a class="btn ghost" href="{% url 'greenshan:services' %}">Our Services</a>
+      </div>
+
+      <div class="hero-cards">
+        <div class="mini-card">
+          <div class="mini-number">120+</div>
+          <div class="mini-meta">Projects Completed</div>
+        </div>
+
+        <div class="mini-card">
+          <div class="mini-number">10+</div>
+          <div class="mini-meta">Years Experience</div>
+        </div>
+
+        <div class="mini-card">
+          <div class="mini-number">50+</div>
+          <div class="mini-meta">Happy Clients</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <a class="btn ghost" href="{% url 'greenshan:portfolio' %}#portfolio-grid">
+          View All Projects
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Filter bar -->
+<section class="section filter-section">
+  <div class="container">
+    <div class="filter-bar" role="toolbar" aria-label="Portfolio filters">
+      <button class="filter-btn active" data-cat="all">All</button>
+      <button class="filter-btn" data-cat="corporate">Corporate</button>
+      <button class="filter-btn" data-cat="motion">Motion</button>
+      <button class="filter-btn" data-cat="documentary">Documentary</button>
+      <button class="filter-btn" data-cat="social">Social</button>
+    </div>
+  </div>
+</section>
+
+<!-- Portfolio grid -->
+<section class="section" id="portfolio-grid">
+  <div class="container">
+    <div class="portfolio-grid refined-grid">
+
+      {% for p in projects %}
+        <article class="portfolio-card"
+                 data-cat="{{ p.category|default:'uncategorized' }}">
+          <a class="card-link" href="{{ p.get_absolute_url }}">
+
+            {% if p.cover %}
+              <div class="card-media"
+                   style="background-image:url('{{ p.cover.url }}')"></div>
+            {% else %}
+              <div class="card-media placeholder"></div>
+            {% endif %}
+
+            <div class="card-body">
+              <h3 class="card-title">{{ p.title }}</h3>
+
+              <p class="card-sub">
+                {{ p.client }}
+                {% if p.project_date %} • {{ p.project_date|date:"Y" }}{% endif %}
+              </p>
+
+              <p class="card-excerpt">
+                {{ p.description|truncatewords:18 }}
+              </p>
+
+              <div class="card-actions">
+                {% if p.cover %}
+                  <button class="view-btn" data-src="{{ p.cover.url }}">
+                    Preview
+                  </button>
+                {% endif %}
+                <span class="btn ghost small">Open</span>
+              </div>
+            </div>
+
+          </a>
+        </article>
+      {% empty %}
+        <p class="muted">
+          No projects available yet. Add items via Django Admin.
+        </p>
+      {% endfor %}
+
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div id="portfolioLightbox" class="lightbox" aria-hidden="true">
+  <button class="close-btn" aria-label="Close">✕</button>
+  <img class="lb-img" src="" alt="Preview">
+</div>
+
+{% endblock %}

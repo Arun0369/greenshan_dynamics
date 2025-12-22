@@ -5,16 +5,31 @@ Django settings for greenshan_project project.
 from pathlib import Path
 import os
 
-# Base directory
+
+# -------------------------------------------------------------------
+# BASE DIRECTORY
+# -------------------------------------------------------------------
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "replace-this-with-a-secure-key"
 
-# DEVELOPMENT MODE
-DEBUG = True
+# -------------------------------------------------------------------
+# SECURITY
+# -------------------------------------------------------------------
 
-ALLOWED_HOSTS = []
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY", "replace-this-with-a-secure-key"
+)
+
+DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
+
+
+
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+]
+
 
 
 # -------------------------------------------------------------------
@@ -28,22 +43,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
 
-    # Our app
+    # Third-party
+    "django_otp",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_static",
+    "two_factor",
+    "qrcode",
+
+    # Local apps
     "greenshan",
 ]
-INSTALLED_APPS += [
-    'django.contrib.sites',
-    'django_otp',
-    'django_otp.plugins.otp_totp',
-    'two_factor',
-    'qrcode',
-    
-]
+
 SITE_ID = 1
-
-
-
 
 
 # -------------------------------------------------------------------
@@ -56,6 +69,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_otp.middleware.OTPMiddleware",  # ✅ REQUIRED FOR 2FA
     "django.contrib.messages.middleware.MessageMiddleware",
 ]
 
@@ -74,11 +88,11 @@ ROOT_URLCONF = "greenshan_project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],     # template directory
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django.template.context_processors.debug",  # required
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -89,7 +103,7 @@ TEMPLATES = [
 
 
 # -------------------------------------------------------------------
-# WSGI
+# WSGI / ASGI
 # -------------------------------------------------------------------
 
 WSGI_APPLICATION = "greenshan_project.wsgi.application"
@@ -111,7 +125,18 @@ DATABASES = {
 # PASSWORD VALIDATION
 # -------------------------------------------------------------------
 
-AUTH_PASSWORD_VALIDATORS = []
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+]
 
 
 # -------------------------------------------------------------------
@@ -120,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = []
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "Asia/Kolkata"   # Indian timezone
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 USE_TZ = True
@@ -131,11 +156,14 @@ USE_TZ = True
 # -------------------------------------------------------------------
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]       # static/ folder
-STATIC_ROOT = BASE_DIR / "staticfiles"         # for collectstatic
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"                # for uploads
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 # -------------------------------------------------------------------
@@ -146,11 +174,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # -------------------------------------------------------------------
-# EMAIL BACKEND (development mode)
+# EMAIL (DEV)
 # -------------------------------------------------------------------
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = '/manage/'
-LOGOUT_REDIRECT_URL = '/manage/login/'
+
+# -------------------------------------------------------------------
+# AUTH REDIRECTS
+# -------------------------------------------------------------------
+
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/admin/"
+LOGOUT_REDIRECT_URL = "/"
+

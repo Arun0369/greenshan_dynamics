@@ -1,36 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Admin Dashboard — GreenShan{% endblock %}
+{% block title %}Admin Dashboard — GreenShan Dynamics{% endblock %}
+
 {% block content %}
 <section class="section">
   <div class="container">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+
+    <div class="dashboard-header">
       <h1>Admin Dashboard</h1>
-      <div><a class="btn ghost" href="{% url 'two_factor:logout' %}">Sign out</a></div>
+      <a class="btn ghost" href="{% url 'logout' %}">Sign out</a>
     </div>
 
-    <div class="cards-grid" style="margin-top:18px;">
-      <div class="card" data-animate>
+    <div class="cards-grid dashboard-cards">
+
+      <div class="card">
         <div class="counter" data-target="{{ projects_count }}">0</div>
         <div class="muted">Projects</div>
+        <a class="btn ghost small" href="{% url 'greenshan:manage_projects' %}">Manage</a>
       </div>
-      <div class="card" data-animate>
-        <div class="counter" data-target="{{ media_count }}">0</div>
-        <div class="muted">Media Files</div>
-      </div>
-      <div class="card" data-animate>
+
+      <div class="card">
         <div class="counter" data-target="{{ testimonials_count }}">0</div>
         <div class="muted">Testimonials</div>
+        <a class="btn ghost small" href="{% url 'greenshan:manage_testimonials' %}">Manage</a>
       </div>
-      <div class="card" data-animate>
+
+      <div class="card">
         <div class="counter" data-target="{{ messages_count }}">0</div>
-        <div class="muted">New Messages</div>
+        <div class="muted">Messages</div>
+        <a class="btn ghost small" href="{% url 'greenshan:manage_messages' %}">View</a>
       </div>
+
     </div>
 
-    <div style="margin-top:22px;">
-      <a class="btn" href="{% url 'portfolio_app:manage_projects_list' %}">Manage Projects</a>
+    <div class="dashboard-actions">
       <a class="btn ghost" href="{% url 'admin:index' %}">Open Django Admin</a>
     </div>
+
   </div>
 </section>
 {% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Message Detail{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:700px;">
+
+    <h1>Message Detail</h1>
+
+    <div class="card">
+      <p><strong>Name:</strong> {{ message.name }}</p>
+      <p><strong>Email:</strong> {{ message.email }}</p>
+      <p><strong>Subject:</strong> {{ message.subject }}</p>
+      <p><strong>Message:</strong><br>{{ message.message|linebreaks }}</p>
+      <p>
+        <strong>Status:</strong>
+        {% if message.handled %}
+          Handled
+        {% else %}
+          New
+        {% endif %}
+      </p>
+    </div>
+
+    <div style="margin-top:18px;">
+      {% if not message.handled %}
+        <a class="btn"
+           href="{% url 'greenshan:mark_message_handled' message.pk %}">
+           Mark as Handled
+        </a>
+      {% endif %}
+      <a class="btn ghost"
+         href="{% url 'greenshan:manage_messages' %}">
+         Back
+      </a>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

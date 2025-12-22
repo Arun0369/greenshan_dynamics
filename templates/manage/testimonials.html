@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Manage Testimonials{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+
+    <h1>Manage Testimonials</h1>
+
+    <!-- ADD TESTIMONIAL -->
+    <div class="card" style="margin-bottom:24px;">
+      <h3>Add Testimonial</h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn" type="submit">Add Testimonial</button>
+      </form>
+    </div>
+
+    <!-- LIST TESTIMONIALS -->
+    <h3>Existing Testimonials</h3>
+
+    {% if testimonials %}
+      <table class="manage-table" style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th>Author</th>
+            <th>Position</th>
+            <th>Visible</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in testimonials %}
+            <tr>
+              <td>{{ t.author }}</td>
+              <td>{{ t.position }}</td>
+              <td>{{ t.visible }}</td>
+              <td>
+                <a class="btn ghost small"
+                   href="{% url 'greenshan:toggle_testimonial' t.pk %}">
+                   Toggle
+                </a>
+                <a class="btn ghost small"
+                   href="{% url 'greenshan:delete_testimonial' t.pk %}">
+                   Delete
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No testimonials yet.</p>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

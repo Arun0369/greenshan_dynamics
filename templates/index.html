@@ -1,0 +1,86 @@
+{% extends "base.html" %} {% load static %} {% block title %}Home — GreenShan
+Dynamics{% endblock %} {% block content %}
+
+<!-- ================= HERO ================= -->
+<section class="hero-section" data-animate>
+  <div class="container hero-inner">
+    <div class="hero-left">
+      <h1>GreenShan Dynamics</h1>
+      <p class="lead">
+        Sustainable Visual Media. Professional Editing. Dynamic Storytelling.
+      </p>
+      <div class="cta">
+        <a href="{% url 'greenshan:portfolio' %}" class="btn">Our Work</a>
+        <a href="{% url 'greenshan:contact' %}" class="btn ghost">Contact</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <img
+        src="{% static 'assets/img/portfolio-hero.jpg' %}"
+        alt="GreenShan Dynamics portfolio preview"
+        class="hero-profile-img"
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<section class="section services-preview" data-animate>
+  <div class="container">
+    <h2 class="section-title">What We Do</h2>
+
+    <div class="cards-grid">
+      {% for s in services %}
+      <article class="card">
+        <h3>{{ s.title }}</h3>
+        <p>{{ s.summary }}</p>
+      </article>
+      {% empty %}
+      <article class="card">
+        <h3>Video Editing</h3>
+        <p>
+          Professional storytelling with smooth transitions, sound design &
+          color correction.
+        </p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURED PROJECTS ================= -->
+<section class="section portfolio-preview" data-animate>
+  <div class="container">
+    <h2 class="section-title">Selected Works</h2>
+
+    <div class="refined-grid">
+      {% for p in featured_projects %}
+      <article class="portfolio-card" data-cat="{{ p.category|default:'all' }}">
+        <div
+          class="card-media"
+          data-bg="{% if p.cover %}{{ p.cover.url }}{% else %}{% static 'assets/img/placeholder.jpg' %}{% endif %}"
+        ></div>
+
+        <div class="card-body">
+          <h3>{{ p.title }}</h3>
+          {% if p.client %}
+          <p class="meta">{{ p.client }}</p>
+          {% endif %}
+          <a
+            class="btn ghost small"
+            href="{% url 'greenshan:project_detail' p.slug %}"
+          >
+            Open
+          </a>
+        </div>
+      </article>
+      {% empty %}
+      <p class="muted">No featured projects yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

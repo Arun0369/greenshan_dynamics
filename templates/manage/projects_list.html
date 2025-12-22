@@ -1,48 +1,89 @@
 {% extends "base.html" %}
-{% block title %}Manage Projects — Admin{% endblock %}
+
+{% block title %}Manage Projects — GreenShan Dynamics{% endblock %}
+
 {% block content %}
+
 <section class="section">
   <div class="container">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
+
+    <!-- Header -->
+    <div class="manage-header">
       <h1>Projects</h1>
-      <div><a class="btn" href="{% url 'portfolio_app:manage_projects_add' %}">+ Add Project</a></div>
+      <a class="btn" href="{% url 'greenshan:manage_project_add' %}">
+        + Add Project
+      </a>
     </div>
 
-    <div style="margin-top:18px;">
-      {% if projects %}
-        <table class="manage-table" style="width:100%; border-collapse:collapse;">
+    <!-- Projects Table -->
+    {% if projects %}
+      <div class="table-wrapper">
+        <table class="manage-table">
           <thead>
             <tr>
-              <th>Title</th><th>Client</th><th>Year</th><th>Category</th><th></th>
+              <th>Title</th>
+              <th>Client</th>
+              <th>Year</th>
+              <th>Category</th>
+              <th class="align-right">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {% for p in projects %}
               <tr>
                 <td>{{ p.title }}</td>
-                <td>{{ p.client }}</td>
-                <td>{{ p.project_date|date:"Y" }}</td>
-                <td>{{ p.category }}</td>
-                <td style="text-align:right;">
-                  <a class="btn ghost small" href="{% url 'portfolio_app:manage_projects_edit' p.pk %}">Edit</a>
-                  <a class="btn ghost small" href="{% url 'portfolio_app:manage_projects_delete' p.pk %}">Delete</a>
+                <td>{{ p.client|default:"—" }}</td>
+                <td>
+                  {% if p.project_date %}
+                    {{ p.project_date|date:"Y" }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td>{{ p.category|default:"—" }}</td>
+                <td class="align-right">
+                  <a
+                    class="btn ghost small"
+                    href="{% url 'greenshan:manage_project_edit' p.pk %}">
+                    Edit
+                  </a>
+                  <a
+                    class="btn ghost small danger"
+                    href="{% url 'greenshan:manage_project_delete' p.pk %}">
+                    Delete
+                  </a>
                 </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
+      </div>
 
-        {% if is_paginated %}
-          <div class="pagination">
-            {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">Prev</a>{% endif %}
-            <span>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-            {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}
-          </div>
-        {% endif %}
-      {% else %}
-        <p>No projects yet.</p>
+      <!-- Pagination -->
+      {% if is_paginated %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">Prev</a>
+          {% endif %}
+
+          <span>
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          {% endif %}
+        </div>
       {% endif %}
-    </div>
+
+    {% else %}
+      <div class="card center">
+        <p class="muted">No projects yet. Click “Add Project” to get started.</p>
+      </div>
+    {% endif %}
+
   </div>
 </section>
+
 {% endblock %}

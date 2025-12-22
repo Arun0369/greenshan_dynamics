@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Contact Messages{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+
+    <h1>Contact Messages</h1>
+
+    {% if messages %}
+      <table class="manage-table" style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in messages %}
+            <tr>
+              <td>{{ m.name }}</td>
+              <td>{{ m.email }}</td>
+              <td>{{ m.subject }}</td>
+              <td>
+                {% if m.handled %}
+                  ✅ Handled
+                {% else %}
+                  ❌ New
+                {% endif %}
+              </td>
+              <td>
+                <a class="btn ghost small"
+                   href="{% url 'greenshan:manage_message_detail' m.pk %}">
+                   View
+                </a>
+                <a class="btn ghost small"
+                   href="{% url 'greenshan:delete_message' m.pk %}">
+                   Delete
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No messages received.</p>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}
