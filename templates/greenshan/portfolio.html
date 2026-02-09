@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Portfolio | GreenShan Dynamics{% endblock %}
+{% block meta_description %}
+Explore our portfolio of professional visual media and creative projects.
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section class="container" style="margin-top: 80px;">
+  <h1>Portfolio</h1>
+  <p class="muted" style="max-width: 800px; margin-top: 15px;">
+    A selection of our recent projects showcasing creativity,
+    storytelling, and technical excellence.
+  </p>
+</section>
+
+<!-- Portfolio Grid -->
+<section class="container" style="margin-top: 60px;">
+  <div class="cards-grid">
+
+    {% for project in projects %}
+      <div class="card">
+
+        {% if project.cover %}
+          <img
+            src="{{ project.cover.url }}"
+            alt="{{ project.title }}"
+            style="border-radius: 8px; margin-bottom: 15px;"
+            loading="lazy">
+        {% endif %}
+
+        <h3>{{ project.title }}</h3>
+
+        {% if project.description %}
+          <p>{{ project.description|truncatechars:120 }}</p>
+        {% else %}
+          <p class="muted">
+            View details about this project and the creative process behind it.
+          </p>
+        {% endif %}
+
+        <a href="{% url 'greenshan:project_detail' project.slug %}"
+           class="btn ghost"
+           style="margin-top: 10px;">
+          View Project
+        </a>
+
+      </div>
+    {% empty %}
+      <p class="muted">
+        No projects available right now. Please check back soon.
+      </p>
+    {% endfor %}
+
+  </div>
+</section>
+
+{% endblock %}

@@ -1,11 +1,49 @@
 {% extends "base.html" %}
 
-{% block content %}
-<h2>Login</h2>
+{% block title %}Login — GreenShan Dynamics{% endblock %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
-</form>
+{% block content %}
+<section class="auth-section">
+  <div class="container auth-container">
+
+    <header class="auth-header">
+      <h1>Login</h1>
+      <p class="muted">
+        Access your dashboard to manage projects and content.
+      </p>
+    </header>
+
+    <form method="post" class="auth-form" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="form-error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {{ field }}
+
+          {% if field.errors %}
+            <div class="form-error">
+              {{ field.errors }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit" class="btn">
+          Login
+        </button>
+      </div>
+    </form>
+
+  </div>
+</section>
 {% endblock %}

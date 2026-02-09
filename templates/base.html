@@ -1,159 +1,169 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <!-- Basic Meta -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>{% block title %}GreenShan Dynamics{% endblock %}</title>
 
-  <!-- SEO -->
-  <title>{% block title %}GreenShan Dynamics{% endblock %}</title>
-  <meta name="description" content="GreenShan Dynamics – Sustainable visual media, professional editing, and dynamic storytelling.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}Professional visual media & storytelling{% endblock %}">
 
-  <!-- Favicon -->
-  <link rel="icon" href="{% static 'assets/img/logo.png' %}" type="image/png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
 
-  <!-- Scripts -->
-  <script defer src="{% static 'assets/js/main.js' %}"></script>
+    <!-- Main JS -->
+    <script defer src="{% static 'assets/js/main.js' %}"></script>
 
-  {% block extra_head %}{% endblock %}
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
-  <!-- ================= HEADER ================= -->
-  <header class="site-header">
+<!-- Skip link -->
+<a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+<!-- Loading Overlay -->
+<div id="loading" class="loading-overlay">
+    <div class="loading-spinner">
+        <span class="spinner-dot"></span>
+        <span class="spinner-dot"></span>
+        <span class="spinner-dot"></span>
+    </div>
+</div>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" aria-label="Toggle theme">
+    <span class="theme-icon sun">☀️</span>
+    <span class="theme-icon moon">🌙</span>
+</button>
+
+<!-- HEADER -->
+<header class="site-header">
     <div class="container header-inner">
 
-      <a class="logo" href="{% url 'greenshan:home' %}">
-        <img
-          src="{% static 'assets/img/logo.png' %}"
-          alt="GreenShan Dynamics Logo"
-          class="site-logo"
-        >
-      </a>
+        <!-- Logo -->
+        <a href="{% url 'greenshan:home' %}" class="logo">
+            <img src="{% static 'assets/img/logo.png' %}" alt="GreenShan Logo">
+            <span class="logo-text">GreenShan Dynamics</span>
+        </a>
 
-      <nav class="main-nav" id="main-nav" aria-label="Main navigation">
-        <ul>
-          <li><a href="{% url 'greenshan:home' %}">Home</a></li>
-          <li><a href="{% url 'greenshan:portfolio' %}">Portfolio</a></li>
-          <li><a href="{% url 'greenshan:services' %}">Services</a></li>
-          <li><a href="{% url 'greenshan:contact' %}">Contact</a></li>
-        </ul>
-
-        <button
-          class="nav-toggle"
-          id="nav-toggle"
-          aria-expanded="false"
-          aria-controls="main-nav"
-          aria-label="Toggle navigation"
-        >
-          ☰
+        <!-- Mobile Nav Toggle -->
+        <button class="nav-toggle"
+                id="nav-toggle"
+                aria-expanded="false"
+                aria-controls="main-nav"
+                aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
         </button>
-      </nav>
+
+        <!-- Navigation -->
+        <nav id="main-nav" class="main-nav" aria-hidden="true">
+<ul>
+  <!-- Public links -->
+  <li>
+    <a href="{% url 'greenshan:home' %}" class="nav-link">Home</a>
+  </li>
+  <li>
+    <a href="{% url 'greenshan:portfolio' %}" class="nav-link">Portfolio</a>
+  </li>
+  <li>
+    <a href="{% url 'greenshan:services' %}" class="nav-link">Services</a>
+  </li>
+  <li>
+    <a href="{% url 'greenshan:contact' %}" class="nav-link">Contact</a>
+  </li>
+
+  <!-- STAFF ONLY -->
+  {% if user.is_authenticated and user.is_staff %}
+    <li>
+      <a href="{% url 'greenshan:dashboard' %}" class="nav-link btn-admin">
+        Dashboard
+      </a>
+    </li>
+  {% endif %}
+
+  <!-- AUTH ACTIONS -->
+  {% if user.is_authenticated %}
+    <li>
+      <a href="{% url 'logout' %}" class="nav-link">
+        Logout
+      </a>
+    </li>
+  {% else %}
+    <li>
+      <a href="{% url 'login' %}" class="nav-link">
+        Login
+      </a>
+    </li>
+  {% endif %}
+</ul>
+
+        </nav>
 
     </div>
-  </header>
+</header>
 
-  <!-- ================= MAIN ================= -->
-  <main id="content">
+<!-- Toast Messages -->
+{% if messages %}
+<div class="messages-container">
+    {% for message in messages %}
+    <div class="toast {{ message.tags }}" role="alert" aria-live="polite">
+        <span>{{ message }}</span>
+        <button class="toast-close" aria-label="Close">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
-    {% if messages %}
-      <div class="container messages">
-        {% for message in messages %}
-          <div class="toast show">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-
+<!-- MAIN CONTENT -->
+<main id="main-content">
     {% block content %}{% endblock %}
-  </main>
+</main>
 
-<!-- ================= FOOTER ================= -->
+<!-- FOOTER -->
 <footer class="site-footer">
-  <div class="container footer-inner">
+    <div class="container footer-grid">
 
-    <!-- Brand -->
-    <div class="footer-brand">
-      <img
-        width= 70px;
-        src="{% static 'assets/img/logo.png' %}"
-        alt="GreenShan Dynamics Logo"
-        class="footer-logo"
-        loading="lazy"
-      >
-      <p class="muted">
-        Sustainable visual media, professional editing, and dynamic storytelling.
-      </p>
-    </div>
+        <div>
+            <h3>GreenShan Dynamics</h3>
+            <p class="muted">
+                Sustainable visual media & professional storytelling.
+            </p>
+        </div>
 
-    <!-- Social Links -->
-    <div class="footer-social" aria-label="Social media links">
+        <div>
+            <h4>Quick Links</h4>
+            <ul class="footer-links">
+                <li><a href="{% url 'greenshan:home' %}">Home</a></li>
+                <li><a href="{% url 'greenshan:portfolio' %}">Portfolio</a></li>
+                <li><a href="{% url 'greenshan:services' %}">Services</a></li>
+                <li><a href="{% url 'greenshan:contact' %}">Contact</a></li>
+            </ul>
+        </div>
 
-      <!-- Instagram -->
-      <a
-        href="https://www.instagram.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Instagram"
-        title="Instagram"
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5a5 5 0 100 10 5 5 0 000-10zm6.5-.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
-        </svg>
-      </a>
-
-      <!-- YouTube -->
-      <a
-        href="https://www.youtube.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="YouTube"
-        title="YouTube"
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M23 7s-1-4-4-4H5C2 3 1 7 1 7s-1 4-1 8 1 8 1 8 1 4 4 4h14c3 0 4-4 4-4s1-4 1-8-1-8-1-8zM10 15V9l6 3-6 3z"/>
-        </svg>
-      </a>
-
-      <!-- LinkedIn -->
-      <a
-        href="https://www.linkedin.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="LinkedIn"
-        title="LinkedIn"
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 3a2 2 0 110 4 2 2 0 010-4zm0 6h4v12H4zm6 0h4v2h.1c.6-1 2-2 4-2 4 0 5 3 5 6v6h-4v-5c0-2 0-4-3-4s-3 2-3 4v5h-4z"/>
-        </svg>
-      </a>
-
-      <!-- Email -->
-      <a
-        href="mailto:contact@greenshandynamics.com"
-        aria-label="Email"
-        title="Email"
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M2 4h20v16H2zm10 9L4 6h16z"/>
-        </svg>
-      </a>
+        <div>
+            <h4>Contact</h4>
+            <p>📧 contact@greenshan.com</p>
+            <p>📞 +1 555 123 4567</p>
+        </div>
 
     </div>
 
-  </div>
-
-  <!-- Bottom -->
-  <div class="footer-bottom center">
-    <p>© {% now "Y" %} GreenShan Dynamics — All Rights Reserved.</p>
-  </div>
+    <div class="footer-bottom">
+        © {% now "Y" %} GreenShan Dynamics. All rights reserved.
+    </div>
 </footer>
 
 
+
+{% block extra_js %}{% endblock %}
 
 </body>
 </html>

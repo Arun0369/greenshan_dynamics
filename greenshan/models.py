@@ -1,30 +1,55 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 import os
 
+# =================================================
+# CONSTANTS & VALIDATION
+# =================================================
 
-# -------------------------------------------------
-# Upload path helpers
-# -------------------------------------------------
+MAX_MEDIA_SIZE = 100 * 1024 * 1024  # 100 MB
+
+ALLOWED_EXTENSIONS = {
+    "image": ["jpg", "jpeg", "png", "webp", "gif"],
+    "video": ["mp4", "webm", "mov", "ogg"],
+    "audio": ["mp3", "wav", "m4a", "ogg"],
+    "document": ["pdf", "doc", "docx", "ppt", "pptx", "txt"],
+}
+
+
+def validate_file_size(file):
+    if file.size > MAX_MEDIA_SIZE:
+        raise ValidationError("File size exceeds 100MB limit.")
+
+
+def validate_file_extension(file, media_type):
+    ext = os.path.splitext(file.name)[1][1:].lower()
+    allowed = ALLOWED_EXTENSIONS.get(media_type, [])
+    if ext not in allowed:
+        raise ValidationError(
+            f"Invalid file type for {media_type}. "
+            f"Allowed: {', '.join(allowed)}"
+        )
+
+
+# =================================================
+# UPLOAD PATH HELPERS (SINGLE SOURCE OF TRUTH)
+# =================================================
 
 def upload_to_project_cover(instance, filename):
-    slug = instance.slug or "new"
-    return os.path.join("projects", slug, "cover", filename)
+    slug = instance.slug or "project"
+    return f"projects/{slug}/cover/{filename}"
 
 
 def upload_to_project_media(instance, filename):
-    slug = (
-        instance.project.slug
-        if instance.project and instance.project.slug
-        else f"project-{instance.project_id or 'x'}"
-    )
-    return os.path.join("projects", slug, "media", filename)
+    slug = instance.project.slug or f"project-{instance.project_id}"
+    return f"projects/{slug}/media/{filename}"
 
 
-# -------------------------------------------------
-# PROJECT MODEL (SINGLE SOURCE OF TRUTH)
-# -------------------------------------------------
+# =================================================
+# PROJECT MODEL
+# =================================================
 
 class Project(models.Model):
 
@@ -40,6 +65,7 @@ class Project(models.Model):
 
     title = models.CharField(max_length=220)
     slug = models.SlugField(max_length=240, unique=True, blank=True)
+
     client = models.CharField(max_length=200, blank=True)
     project_date = models.DateField(null=True, blank=True)
     location = models.CharField(max_length=200, blank=True)
@@ -75,15 +101,20 @@ class Project(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # Auto-generate unique slug
+        """
+        Auto-generate unique slug if not provided.
+        """
         if not self.slug:
             base_slug = slugify(self.title)
             slug = base_slug
-            count = 1
+            counter = 1
+
             while Project.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{count}"
-                count += 1
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
             self.slug = slug
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -93,9 +124,9 @@ class Project(models.Model):
         )
 
 
-# -------------------------------------------------
+# =================================================
 # PROJECT MEDIA MODEL
-# -------------------------------------------------
+# =================================================
 
 class ProjectMedia(models.Model):
 
@@ -103,14 +134,12 @@ class ProjectMedia(models.Model):
     MEDIA_VIDEO = "video"
     MEDIA_AUDIO = "audio"
     MEDIA_DOCUMENT = "document"
-    MEDIA_OTHER = "other"
 
     MEDIA_CHOICES = [
         (MEDIA_IMAGE, "Image"),
         (MEDIA_VIDEO, "Video"),
         (MEDIA_AUDIO, "Audio"),
         (MEDIA_DOCUMENT, "Document"),
-        (MEDIA_OTHER, "Other"),
     ]
 
     project = models.ForeignKey(
@@ -123,7 +152,6 @@ class ProjectMedia(models.Model):
     media_type = models.CharField(
         max_length=20,
         choices=MEDIA_CHOICES,
-        default=MEDIA_OTHER,
     )
 
     caption = models.CharField(max_length=250, blank=True)
@@ -140,26 +168,32 @@ class ProjectMedia(models.Model):
     def __str__(self):
         return f"{self.project.title} — {self.media_type}"
 
+    def clean(self):
+        if self.file:
+            validate_file_size(self.file)
+            validate_file_extension(self.file, self.media_type)
+
     @property
     def filename(self):
         return os.path.basename(self.file.name)
 
+    # 🔹 Media helpers for templates
+    @property
     def is_image(self):
         return self.media_type == self.MEDIA_IMAGE
 
+    @property
     def is_video(self):
         return self.media_type == self.MEDIA_VIDEO
 
+    @property
     def is_audio(self):
         return self.media_type == self.MEDIA_AUDIO
 
-    def is_document(self):
-        return self.media_type == self.MEDIA_DOCUMENT
 
-
-# -------------------------------------------------
+# =================================================
 # TESTIMONIAL MODEL
-# -------------------------------------------------
+# =================================================
 
 class Testimonial(models.Model):
     author = models.CharField(max_length=120)
@@ -170,18 +204,14 @@ class Testimonial(models.Model):
 
     class Meta:
         ordering = ["-created"]
-        indexes = [
-            models.Index(fields=["visible"]),
-            models.Index(fields=["created"]),
-        ]
 
     def __str__(self):
         return f"{self.author} — {self.position or 'Client'}"
 
 
-# -------------------------------------------------
+# =================================================
 # SERVICE MODEL
-# -------------------------------------------------
+# =================================================
 
 class Service(models.Model):
     title = models.CharField(max_length=160)
@@ -195,9 +225,9 @@ class Service(models.Model):
         return self.title
 
 
-# -------------------------------------------------
+# =================================================
 # CONTACT REQUEST MODEL
-# -------------------------------------------------
+# =================================================
 
 class ContactRequest(models.Model):
     name = models.CharField(max_length=200)
@@ -209,10 +239,6 @@ class ContactRequest(models.Model):
 
     class Meta:
         ordering = ["-created"]
-        indexes = [
-            models.Index(fields=["handled"]),
-            models.Index(fields=["created"]),
-        ]
 
     def __str__(self):
-        return f"{self.name} — {self.email} ({self.created.date()})"
+        return f"{self.name} — {self.email}"

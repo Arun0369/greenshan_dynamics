@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Projects | Admin{% endblock %}
+
+{% block content %}
+
+<section class="container" style="margin-top: 80px;">
+  <h1>Projects</h1>
+  <p class="muted">Manage portfolio projects</p>
+</section>
+
+<section class="container" style="margin-top: 40px;">
+
+  <a href="{% url 'greenshan:manage_create' %}" class="btn">
+    + Add New Project
+  </a>
+
+  {% if projects %}
+  <table class="manage-table" style="margin-top:20px;">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for project in projects %}
+      <tr>
+        <td>{{ project.title }}</td>
+        <td>{{ project.created|date:"d M Y" }}</td>
+        <td>
+          <a href="{% url 'greenshan:manage_edit' project.id %}" class="btn small">Edit</a>
+          <form method="post"
+                action="{% url 'greenshan:manage_delete' project.id %}"
+                style="display:inline;">
+            {% csrf_token %}
+            <button class="btn danger small">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">No projects found.</p>
+  {% endif %}
+
+</section>
+
+{% endblock %}

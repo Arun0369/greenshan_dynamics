@@ -1,0 +1,25 @@
+{% extends "registration/base.html" %}
+{% load static %}
+
+{% block title %}Page Not Found | GreenShan{% endblock %}
+
+{% block content %}
+
+<section class="container center" style="margin-top: 120px;">
+  <h1 class="error-title">404</h1>
+
+  <h2>Page Not Found</h2>
+
+  <p class="muted" style="max-width: 600px; margin-top: 15px;">
+    The page you are looking for doesn’t exist or may have been moved.
+    Please check the URL or return to the homepage.
+  </p>
+
+  <div style="margin-top: 30px;">
+    <a href="{% url 'home' %}" class="btn">
+      Go to Home
+    </a>
+  </div>
+</section>
+
+{% endblock %}

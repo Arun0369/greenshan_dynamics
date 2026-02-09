@@ -1,41 +1,59 @@
 {% extends "base.html" %}
-{% block title %}Admin Dashboard — GreenShan Dynamics{% endblock %}
+{% load static %}
+
+{% block title %}Dashboard | GreenShan{% endblock %}
 
 {% block content %}
-<section class="section">
-  <div class="container">
 
-    <div class="dashboard-header">
-      <h1>Admin Dashboard</h1>
-      <a class="btn ghost" href="{% url 'logout' %}">Sign out</a>
-    </div>
+<section class="container" style="margin-top: 80px;">
+  <h1>Dashboard</h1>
+  <p class="muted">Overview of your platform activity</p>
+</section>
 
-    <div class="cards-grid dashboard-cards">
+<section class="container" style="margin-top: 40px;">
+  <div class="cards-grid">
 
-      <div class="card">
-        <div class="counter" data-target="{{ projects_count }}">0</div>
-        <div class="muted">Projects</div>
-        <a class="btn ghost small" href="{% url 'greenshan:manage_projects' %}">Manage</a>
-      </div>
+<div class="card">
+  <h3>Projects</h3>
+  <p>Total: {{ projects_total }}</p>
+  <p class="muted">Featured: {{ featured_projects }}</p>
+</div>
 
-      <div class="card">
-        <div class="counter" data-target="{{ testimonials_count }}">0</div>
-        <div class="muted">Testimonials</div>
-        <a class="btn ghost small" href="{% url 'greenshan:manage_testimonials' %}">Manage</a>
-      </div>
+<div class="card">
+  <h3>Testimonials</h3>
+  <p>Total: {{ testimonials_total }}</p>
+  <p class="muted">Visible: {{ testimonials_visible }}</p>
+</div>
 
-      <div class="card">
-        <div class="counter" data-target="{{ messages_count }}">0</div>
-        <div class="muted">Messages</div>
-        <a class="btn ghost small" href="{% url 'greenshan:manage_messages' %}">View</a>
-      </div>
-
-    </div>
-
-    <div class="dashboard-actions">
-      <a class="btn ghost" href="{% url 'admin:index' %}">Open Django Admin</a>
-    </div>
+<div class="card">
+  <h3>Messages</h3>
+  <p>Pending: {{ messages_pending }}</p>
+</div>
 
   </div>
 </section>
+
+<section class="container" style="margin-top: 60px;">
+  <h2>Quick Actions</h2>
+
+  <div class="cards-grid" style="margin-top: 20px;">
+
+    <a href="{% url 'greenshan:manage_list' %}" class="card">
+      <h3>Manage Projects</h3>
+      <p>View, edit, or delete portfolio projects</p>
+    </a>
+
+    <a href="{% url 'greenshan:manage_messages' %}" class="card">
+      <h3>View Messages</h3>
+      <p>Read and respond to contact messages</p>
+    </a>
+
+    <a href="{% url 'greenshan:manage_testimonials' %}" class="card">
+      <h3>Testimonials</h3>
+      <p>Manage client feedback and reviews</p>
+    </a>
+
+  </div>
+</section>
+
 {% endblock %}

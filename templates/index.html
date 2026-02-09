@@ -1,85 +1,116 @@
-{% extends "base.html" %} {% load static %} {% block title %}Home — GreenShan
-Dynamics{% endblock %} {% block content %}
+{% extends "base.html" %}
+{% load static %}
 
-<!-- ================= HERO ================= -->
-<section class="hero-section" data-animate>
-  <div class="container hero-inner">
-    <div class="hero-left">
-      <h1>GreenShan Dynamics</h1>
-      <p class="lead">
-        Sustainable Visual Media. Professional Editing. Dynamic Storytelling.
+{% block title %}Home | GreenShan Dynamics{% endblock %}
+{% block meta_description %}
+GreenShan Dynamics – Professional visual media, video editing, and storytelling services.
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="container">
+    <h1>
+      Sustainable<br>
+      <span style="color: var(--primary);">Visual Storytelling</span>
+    </h1>
+
+    <p>
+      We craft professional visual media, cinematic edits, and creative storytelling
+      that elevate brands and ideas.
+    </p>
+
+    <div style="margin-top: 30px;">
+      <a href="{% url 'greenshan:portfolio' %}" class="btn">
+        View Portfolio
+      </a>
+      <a href="{% url 'greenshan:contact' %}" class="btn ghost">
+        Start a Project
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES PREVIEW -->
+<section class="container" style="margin-top: 80px;">
+  <h2>What We Do</h2>
+
+  <div class="cards-grid">
+    <div class="card">
+      <h3>Video Editing</h3>
+      <p>
+        Professional post-production with clean cuts, cinematic flow,
+        and strong storytelling.
       </p>
-      <div class="cta">
-        <a href="{% url 'greenshan:portfolio' %}" class="btn">Our Work</a>
-        <a href="{% url 'greenshan:contact' %}" class="btn ghost">Contact</a>
+    </div>
+
+    <div class="card">
+      <h3>Motion Graphics</h3>
+      <p>
+        Eye-catching animations and motion visuals that bring ideas to life.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Color Grading</h3>
+      <p>
+        Advanced color correction to set mood, tone, and cinematic quality.
+      </p>
+    </div>
+  </div>
+
+  <div style="margin-top: 40px;">
+    <a href="{% url 'greenshan:services' %}" class="btn ghost">
+      View All Services
+    </a>
+  </div>
+</section>
+
+<!-- PORTFOLIO PREVIEW -->
+<!-- PORTFOLIO PREVIEW -->
+<section class="container" style="margin-top: 100px;">
+  <h2>Featured Projects</h2>
+
+  <div class="portfolio-grid">
+    {% for project in featured_projects %}
+      <div class="card">
+        {% if project.cover %}
+          <img src="{{ project.cover.url }}" alt="{{ project.title }}">
+        {% endif %}
+
+        <h3>{{ project.title }}</h3>
+        <p>{{ project.description|truncatechars:100 }}</p>
+
+        <a href="{% url 'greenshan:project_detail' project.slug %}"
+           class="btn ghost">
+          View Project
+        </a>
       </div>
-    </div>
-
-    <div class="hero-right">
-      <img
-        src="{% static 'assets/img/portfolio-hero.jpg' %}"
-        alt="GreenShan Dynamics portfolio preview"
-        class="hero-profile-img"
-        loading="lazy"
-      />
-    </div>
-  </div>
-</section>
-
-<!-- ================= SERVICES ================= -->
-<section class="section services-preview" data-animate>
-  <div class="container">
-    <h2 class="section-title">What We Do</h2>
-
-    <div class="cards-grid">
-      {% for s in services %}
-      <article class="card">
-        <h3>{{ s.title }}</h3>
-        <p>{{ s.summary }}</p>
-      </article>
-      {% empty %}
-      <article class="card">
-        <h3>Video Editing</h3>
-        <p>
-          Professional storytelling with smooth transitions, sound design &
-          color correction.
-        </p>
-      </article>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-<!-- ================= FEATURED PROJECTS ================= -->
-<section class="section portfolio-preview" data-animate>
-  <div class="container">
-    <h2 class="section-title">Selected Works</h2>
-
-    <div class="refined-grid">
-      {% for p in featured_projects %}
-      <article class="portfolio-card" data-cat="{{ p.category|default:'all' }}">
-        <div
-          class="card-media"
-          data-bg="{% if p.cover %}{{ p.cover.url }}{% else %}{% static 'assets/img/placeholder.jpg' %}{% endif %}"
-        ></div>
-
-        <div class="card-body">
-          <h3>{{ p.title }}</h3>
-          {% if p.client %}
-          <p class="meta">{{ p.client }}</p>
-          {% endif %}
-          <a
-            class="btn ghost small"
-            href="{% url 'greenshan:project_detail' p.slug %}"
-          >
-            Open
-          </a>
-        </div>
-      </article>
-      {% empty %}
+    {% empty %}
       <p class="muted">No featured projects yet.</p>
-      {% endfor %}
-    </div>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top: 40px;">
+    <a href="{% url 'greenshan:portfolio' %}" class="btn">
+      View Full Portfolio
+    </a>
+  </div>
+</section>
+
+
+<!-- CALL TO ACTION -->
+<section class="container" style="margin-top: 120px; text-align: center;">
+  <h2>Let’s Build Something Great</h2>
+  <p class="muted">
+    Have an idea or project in mind? Let’s collaborate and bring it to life.
+  </p>
+
+  <div style="margin-top: 30px;">
+    <a href="{% url 'greenshan:contact' %}" class="btn">
+      Contact Us
+    </a>
   </div>
 </section>
 

@@ -1,54 +1,50 @@
 {% extends "base.html" %}
-{% block title %}Contact Messages{% endblock %}
+
+{% load static %}
+
+{% block title %}Messages | Admin{% endblock %}
 
 {% block content %}
-<section class="section">
-  <div class="container">
 
-    <h1>Contact Messages</h1>
-
-    {% if messages %}
-      <table class="manage-table" style="width:100%; border-collapse:collapse;">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Subject</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for m in messages %}
-            <tr>
-              <td>{{ m.name }}</td>
-              <td>{{ m.email }}</td>
-              <td>{{ m.subject }}</td>
-              <td>
-                {% if m.handled %}
-                  ✅ Handled
-                {% else %}
-                  ❌ New
-                {% endif %}
-              </td>
-              <td>
-                <a class="btn ghost small"
-                   href="{% url 'greenshan:manage_message_detail' m.pk %}">
-                   View
-                </a>
-                <a class="btn ghost small"
-                   href="{% url 'greenshan:delete_message' m.pk %}">
-                   Delete
-                </a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p class="muted">No messages received.</p>
-    {% endif %}
-
-  </div>
+<section class="container" style="margin-top: 80px;">
+  <h1>Messages</h1>
+  <p class="muted">All contact form submissions</p>
 </section>
+
+<section class="container" style="margin-top: 40px;">
+
+  {% if messages_list %}
+    <table class="manage-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Subject</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for msg in messages_list %}
+          <tr>
+            <td>{{ msg.name }}</td>
+            <td>{{ msg.email }}</td>
+            <td>{{ msg.subject|default:"—" }}</td>
+            <td>{{ msg.created_at|date:"d M Y" }}</td>
+            <td>
+              <a href="{% url 'message_detail' msg.id %}" class="btn small">
+                View
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No messages received yet.</p>
+  {% endif %}
+
+</section>
+
 {% endblock %}

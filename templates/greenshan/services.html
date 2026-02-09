@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Services | GreenShan Dynamics{% endblock %}
+{% block meta_description %}
+Professional video editing, motion graphics, color grading, and visual media services.
+{% endblock %}
+
+{% block content %}
+
+<section class="container" style="margin-top: 80px;">
+  <h1>Our Services</h1>
+  <p class="muted" style="max-width: 800px; margin-top: 15px;">
+    We offer end-to-end visual media solutions focused on quality,
+    creativity, and storytelling.
+  </p>
+</section>
+
+<section class="container" style="margin-top: 60px;">
+  <div class="cards-grid">
+
+    <div class="card">
+      <h3>Video Editing</h3>
+      <p>
+        Professional editing for films, YouTube, commercials, and social media
+        with clean cuts, pacing, and storytelling.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Motion Graphics</h3>
+      <p>
+        Eye-catching animations, titles, and visual effects that enhance
+        brand identity and engagement.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Color Grading</h3>
+      <p>
+        Cinematic color correction and grading to create mood,
+        consistency, and visual impact.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Sound Design</h3>
+      <p>
+        Audio cleanup, background scoring, and sound effects
+        for a complete professional finish.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Content Strategy</h3>
+      <p>
+        Creative guidance and planning to ensure your visual
+        content reaches the right audience.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Post-Production Support</h3>
+      <p>
+        End-to-end post-production workflow management
+        with timely delivery.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<section class="container" style="margin-top: 80px; text-align: center;">
+  <h2>Have a Project in Mind?</h2>
+  <p class="muted" style="margin-top: 10px;">
+    Let’s work together to bring your vision to life.
+  </p>
+  <a href="{% url 'greenshan:contact' %}" class="btn" style="margin-top: 20px;">
+    Contact Us
+  </a>
+</section>
+
+{% endblock %}

@@ -6,67 +6,14 @@ from PIL import Image
 from .models import Project, ProjectMedia, Testimonial
 
 
-# -------------------------------------------------
-# Constants
-# -------------------------------------------------
-
-MAX_UPLOAD_SIZE = 100 * 1024 * 1024  # 100 MB
-
-ALLOWED_EXT = {
-    "image": ["jpg", "jpeg", "png", "webp", "gif"],
-    "video": ["mp4", "webm", "mov", "ogg"],
-    "audio": ["mp3", "wav", "m4a", "ogg"],
-    "document": ["pdf", "doc", "docx", "ppt", "pptx", "txt"],
-}
-
-CATEGORY_CHOICES = [
-    ("corporate", "Corporate"),
-    ("motion", "Motion Graphics"),
-    ("documentary", "Documentary"),
-    ("social", "Social Media"),
-    ("advertisement", "Advertisement"),
-    ("other", "Other"),
-]
-
-
-# -------------------------------------------------
-# Helpers
-# -------------------------------------------------
-
-def detect_media_type_by_ext(filename: str) -> str:
-    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-    for media_type, exts in ALLOWED_EXT.items():
-        if ext in exts:
-            return media_type
-    return ProjectMedia.MEDIA_OTHER
-
-
-def validate_file_size(file):
-    if file.size > MAX_UPLOAD_SIZE:
-        raise ValidationError(
-            f"File too large (max {MAX_UPLOAD_SIZE // (1024 * 1024)} MB)."
-        )
-
-
-def validate_real_image(file):
-    try:
-        img = Image.open(file)
-        img.verify()
-    except Exception:
-        raise ValidationError("Upload a valid image file.")
-
-
 # =================================================
-# PROJECT FORM (FINAL)
+# PROJECT FORM
 # =================================================
 
 class ProjectForm(forms.ModelForm):
-
-    category = forms.ChoiceField(
-        choices=CATEGORY_CHOICES,
-        required=False,
-        widget=forms.Select(),
-    )
+    """
+    Main form for creating and editing projects.
+    """
 
     class Meta:
         model = Project
@@ -88,12 +35,27 @@ class ProjectForm(forms.ModelForm):
             "experience_notes": forms.Textarea(attrs={"rows": 4}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Slug is auto-generated; keep it optional and safe
+        self.fields["slug"].required = False
+        self.fields["slug"].widget.attrs["readonly"] = True
+
     def clean_cover(self):
+        """
+        Extra safety check to ensure uploaded cover is a valid image.
+        """
         cover = self.cleaned_data.get("cover")
         if not cover:
             return cover
-        validate_file_size(cover)
-        validate_real_image(cover)
+
+        try:
+            img = Image.open(cover)
+            img.verify()
+        except Exception:
+            raise ValidationError("Upload a valid image file.")
+
         return cover
 
 
@@ -102,17 +64,58 @@ class ProjectForm(forms.ModelForm):
 # =================================================
 
 class ProjectMediaForm(forms.ModelForm):
+    """
+    Individual media item form.
+    Core validation is handled in the model.
+    """
+
     class Meta:
         model = ProjectMedia
-        fields = ["file", "caption", "order"]
+        fields = ["file", "media_type", "caption", "order"]
 
-    def clean_file(self):
-        file = self.cleaned_data.get("file")
-        if not file:
-            return file
-        validate_file_size(file)
-        self.instance.media_type = detect_media_type_by_ext(file.name)
-        return file
+    def clean(self):
+        cleaned_data = super().clean()
+        file = cleaned_data.get("file")
+        media_type = cleaned_data.get("media_type")
+
+        if file and not media_type:
+            raise ValidationError("Media type is required.")
+
+        return cleaned_data
+
+
+# =================================================
+# PROJECT MEDIA FORMSET
+# =================================================
+
+class BaseProjectMediaFormSet(forms.BaseInlineFormSet):
+    """
+    Enforces business rules across all media:
+    - Maximum 10 media files per project
+    """
+
+    def clean(self):
+        super().clean()
+
+        active_forms = [
+            form for form in self.forms
+            if form.cleaned_data and not form.cleaned_data.get("DELETE", False)
+        ]
+
+        if len(active_forms) > 10:
+            raise ValidationError(
+                "A project can have a maximum of 10 media files."
+            )
+
+
+ProjectMediaFormSet = inlineformset_factory(
+    Project,
+    ProjectMedia,
+    form=ProjectMediaForm,
+    formset=BaseProjectMediaFormSet,
+    extra=1,
+    can_delete=True,
+)
 
 
 # =================================================
@@ -126,16 +129,3 @@ class TestimonialForm(forms.ModelForm):
         widgets = {
             "text": forms.Textarea(attrs={"rows": 4}),
         }
-
-
-# =================================================
-# PROJECT MEDIA FORMSET
-# =================================================
-
-ProjectMediaFormSet = inlineformset_factory(
-    Project,
-    ProjectMedia,
-    form=ProjectMediaForm,
-    extra=1,
-    can_delete=True,
-)

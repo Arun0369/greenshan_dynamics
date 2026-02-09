@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django
+db.sqlite3
+media/
+
+# Virtual environment
+myvenv/
+venv/
+env/
+
+# OS files
+desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+# Documents
+*.docx
+
+# Images temp
+static/assets/img/.jpg

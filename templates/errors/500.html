@@ -1,0 +1,30 @@
+{% extends "registration/base.html" %}
+{% load static %}
+
+{% block title %}Server Error | GreenShan{% endblock %}
+
+{% block content %}
+
+<section class="container center" style="margin-top: 120px;">
+  <h1 class="error-title">500</h1>
+
+  <h2>Something Went Wrong</h2>
+
+  <p class="muted" style="max-width: 600px; margin-top: 15px;">
+    An unexpected error occurred on our server.
+    Please try again later or return to the homepage.
+  </p>
+
+  <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+    <a href="{% url 'home' %}" class="btn">
+      Go to Home
+    </a>
+
+    <a href="{% url 'contact' %}" class="btn ghost">
+      Contact Support
+    </a>
+  </div>
+</section>
+
+{% endblock %}
+  

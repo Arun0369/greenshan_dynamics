@@ -1,185 +1,89 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}
-  {% if is_create %}Add Project{% else %}Edit Project{% endif %} — Admin
-{% endblock %}
+{% block title %}Project Form | Admin{% endblock %}
 
 {% block content %}
 
-<section class="section">
-  <div class="container container-wide">
-
-    <h1>
-      {% if is_create %}Add Project{% else %}Edit Project{% endif %}
-    </h1>
-
-    <form method="post" enctype="multipart/form-data" novalidate id="projectForm">
-      {% csrf_token %}
-
-      <div class="form-grid">
-
-        <!-- ================= MAIN FORM ================= -->
-        <div class="form-main">
-
-          {% if form.non_field_errors %}
-            <div class="card danger-card">
-              {{ form.non_field_errors }}
-            </div>
-          {% endif %}
-
-          <div class="form-group">
-            {{ form.title.label_tag }}
-            {{ form.title }}
-            {{ form.title.errors }}
-          </div>
-
-          <div class="form-group">
-            {{ form.slug.label_tag }}
-            {{ form.slug }}
-            {{ form.slug.errors }}
-          </div>
-
-          <div class="form-group">
-            {{ form.client.label_tag }}
-            {{ form.client }}
-          </div>
-
-          <div class="form-group">
-            {{ form.project_date.label_tag }}
-            {{ form.project_date }}
-          </div>
-
-          <div class="form-group">
-            {{ form.location.label_tag }}
-            {{ form.location }}
-          </div>
-
-          <!-- ✅ CATEGORY DROPDOWN -->
-          <div class="form-group">
-            {{ form.category.label_tag }}
-            {{ form.category }}
-            {{ form.category.errors }}
-          </div>
-
-          <div class="form-group">
-            {{ form.cover.label_tag }}
-            {{ form.cover }}
-            {{ form.cover.errors }}
-
-            {% if project and project.cover %}
-              <div class="image-preview">
-                <img
-                  src="{{ project.cover.url }}"
-                  alt="{{ project.title }}"
-                >
-              </div>
-            {% endif %}
-          </div>
-
-          <div class="form-group">
-            {{ form.description.label_tag }}
-            {{ form.description }}
-          </div>
-
-          <div class="form-group">
-            {{ form.experience_notes.label_tag }}
-            {{ form.experience_notes }}
-          </div>
-
-        </div>
-
-        <!-- ================= SIDEBAR ================= -->
-        <aside class="form-sidebar">
-
-          <!-- Media -->
-          <div class="card media-box">
-            <h3>Media</h3>
-
-            {{ formset.management_form }}
-
-            {% for f in formset.forms %}
-              <div class="media-item">
-
-                {% if f.instance.pk %}
-                  <div class="media-preview">
-                    <img
-                      src="{{ f.instance.file.url }}"
-                      alt="{{ f.instance.caption|default:'' }}"
-                    >
-                  </div>
-                {% endif %}
-
-                <div class="form-group">
-                  {{ f.file.label_tag }}
-                  {{ f.file }}
-                  {{ f.file.errors }}
-                </div>
-
-                <div class="form-group">
-                  {{ f.caption.label_tag }}
-                  {{ f.caption }}
-                </div>
-
-                <div class="form-group">
-                  {{ f.order.label_tag }}
-                  {{ f.order }}
-                </div>
-
-                <div class="form-group checkbox-group">
-                  {{ f.DELETE }} <label>Delete</label>
-                </div>
-
-              </div>
-            {% endfor %}
-
-            <p class="muted">
-              Add up to 10 media items. Use “order” to sort.
-            </p>
-          </div>
-
-          <!-- Featured -->
-          <div class="form-group checkbox-group">
-            {{ form.featured }} {{ form.featured.label_tag }}
-          </div>
-
-          <!-- Actions -->
-          <div class="form-actions">
-            <button class="btn" type="submit" id="saveBtn">
-              Save
-            </button>
-            <a
-              class="btn ghost"
-              href="{% url 'greenshan:manage_projects' %}">
-              Cancel
-            </a>
-          </div>
-
-          <!-- Status message -->
-          <p class="muted" id="formStatus" style="display:none;">
-            Saving project, please wait…
-          </p>
-
-        </aside>
-
-      </div>
-    </form>
-
-  </div>
+<section class="container" style="margin-top: 80px;">
+  <h1>
+    {% if form.instance.pk %}
+      Edit Project
+    {% else %}
+      Add New Project
+    {% endif %}
+  </h1>
 </section>
 
-<!-- ================= FORM STATUS SCRIPT ================= -->
-<script>
-  const form = document.getElementById('projectForm');
-  const btn = document.getElementById('saveBtn');
-  const status = document.getElementById('formStatus');
+<section class="container" style="margin-top: 40px; max-width: 900px;">
 
-  if (form) {
-    form.addEventListener('submit', () => {
-      btn.disabled = true;
-      btn.textContent = 'Saving…';
-      status.style.display = 'block';
-    });
-  }
-</script>
+  <form method="post" enctype="multipart/form-data" class="card">
+    {% csrf_token %}
+
+    <!-- =======================
+         PROJECT MAIN FORM
+    ======================== -->
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">
+          {{ field.label }}
+        </label>
+
+        {{ field }}
+
+        {% if field.errors %}
+          <div class="form-error">
+            {{ field.errors }}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <hr style="margin:40px 0;">
+
+    <!-- =======================
+         PROJECT MEDIA FORMSET
+    ======================== -->
+    <h3>Project Media</h3>
+
+    {{ formset.management_form }}
+
+    {% for media_form in formset %}
+      <div class="card" style="margin-bottom:20px; padding:15px;">
+
+        {% for field in media_form.visible_fields %}
+          <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="form-error">{{ field.errors }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        {% if media_form.instance.pk %}
+          <div class="form-group">
+            {{ media_form.DELETE }} Delete this media
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <!-- =======================
+         ACTIONS
+    ======================== -->
+    <div style="margin-top: 30px; display: flex; gap: 15px;">
+      <button type="submit" class="btn">
+        Save Project
+      </button>
+
+      <a href="{% url 'greenshan:manage_list' %}" class="btn ghost">
+        Cancel
+      </a>
+    </div>
+
+  </form>
+
+</section>
 
 {% endblock %}

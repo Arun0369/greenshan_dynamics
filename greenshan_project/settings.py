@@ -1,29 +1,20 @@
-"""
-Django settings for greenshan_project project.
-"""
-
 from pathlib import Path
-import os
-
-
-# -------------------------------------------------------------------
+import os 
+# =================================================
 # BASE DIRECTORY
-# -------------------------------------------------------------------
+# =================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# -------------------------------------------------------------------
-# SECURITY
-# -------------------------------------------------------------------
+# =================================================
+# SECURITY (DEMO SAFE)
+# =================================================
 
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY", "replace-this-with-a-secure-key"
-)
+# ⚠️ For demo only. Must be changed in production.
+SECRET_KEY = "dev-secret-key-change-later"
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
-
-
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -31,10 +22,9 @@ ALLOWED_HOSTS = [
 ]
 
 
-
-# -------------------------------------------------------------------
+# =================================================
 # APPLICATIONS
-# -------------------------------------------------------------------
+# =================================================
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -43,25 +33,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sites",
 
-    # Third-party
-    "django_otp",
-    "django_otp.plugins.otp_totp",
-    "django_otp.plugins.otp_static",
-    "two_factor",
-    "qrcode",
-
-    # Local apps
     "greenshan",
 ]
 
-SITE_ID = 1
 
-
-# -------------------------------------------------------------------
+# =================================================
 # MIDDLEWARE
-# -------------------------------------------------------------------
+# =================================================
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -69,26 +48,29 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django_otp.middleware.OTPMiddleware",  # ✅ REQUIRED FOR 2FA
     "django.contrib.messages.middleware.MessageMiddleware",
 ]
 
 
-# -------------------------------------------------------------------
-# URLS
-# -------------------------------------------------------------------
+# =================================================
+# URL & WSGI
+# =================================================
 
 ROOT_URLCONF = "greenshan_project.urls"
 
+WSGI_APPLICATION = "greenshan_project.wsgi.application"
 
-# -------------------------------------------------------------------
+
+# =================================================
 # TEMPLATES
-# -------------------------------------------------------------------
+# =================================================
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [
+            BASE_DIR / "templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -102,16 +84,9 @@ TEMPLATES = [
 ]
 
 
-# -------------------------------------------------------------------
-# WSGI / ASGI
-# -------------------------------------------------------------------
-
-WSGI_APPLICATION = "greenshan_project.wsgi.application"
-
-
-# -------------------------------------------------------------------
-# DATABASE
-# -------------------------------------------------------------------
+# =================================================
+# DATABASE (DEMO SAFE)
+# =================================================
 
 DATABASES = {
     "default": {
@@ -121,27 +96,9 @@ DATABASES = {
 }
 
 
-# -------------------------------------------------------------------
-# PASSWORD VALIDATION
-# -------------------------------------------------------------------
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {"min_length": 8},
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-]
-
-
-# -------------------------------------------------------------------
+# =================================================
 # INTERNATIONALIZATION
-# -------------------------------------------------------------------
+# =================================================
 
 LANGUAGE_CODE = "en-us"
 
@@ -151,40 +108,33 @@ USE_I18N = True
 USE_TZ = True
 
 
-# -------------------------------------------------------------------
-# STATIC & MEDIA FILES
-# -------------------------------------------------------------------
+# =================================================
+# STATIC FILES
+# =================================================
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+# =================================================
+# MEDIA FILES
+# =================================================
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-# -------------------------------------------------------------------
-# DEFAULT PRIMARY KEY FIELD
-# -------------------------------------------------------------------
+# =================================================
+# AUTH & DEFAULTS
+# =================================================
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# -------------------------------------------------------------------
-# EMAIL (DEV)
-# -------------------------------------------------------------------
-
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-
-# -------------------------------------------------------------------
-# AUTH REDIRECTS
-# -------------------------------------------------------------------
-
 LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "/admin/"
+LOGIN_REDIRECT_URL = "/manage/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 

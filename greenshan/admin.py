@@ -9,39 +9,45 @@ from .models import (
     ContactRequest,
 )
 
-
-# -------------------------------------------------
-# Project Media Inline
-# -------------------------------------------------
+# =================================================
+# PROJECT MEDIA INLINE
+# =================================================
 
 class ProjectMediaInline(admin.TabularInline):
     model = ProjectMedia
     extra = 1
-    fields = ("preview", "file", "caption", "order")
+    fields = ("preview", "file", "media_type", "caption", "order")
     readonly_fields = ("preview",)
     ordering = ("order",)
 
     def preview(self, obj):
+        """
+        Safe preview for admin.
+        Only images are rendered as thumbnails.
+        """
         if not obj.pk or not obj.file:
             return "—"
+
         if obj.media_type == ProjectMedia.MEDIA_IMAGE:
             return format_html(
                 '<img src="{}" style="max-height:80px;border-radius:6px;" />',
                 obj.file.url,
             )
+
         return obj.filename
 
     preview.short_description = "Preview"
 
 
-# -------------------------------------------------
-# Project Admin
-# -------------------------------------------------
+# =================================================
+# PROJECT ADMIN
+# =================================================
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = (
         "title",
+        "slug",
         "client",
         "project_date",
         "category",
@@ -52,14 +58,17 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ("featured", "category", "created")
     search_fields = ("title", "client", "category")
     date_hierarchy = "created"
-    inlines = [ProjectMediaInline]
-    readonly_fields = ("created",)
     ordering = ("-created",)
 
+    readonly_fields = ("created",)
+    prepopulated_fields = {"slug": ("title",)}
 
-# -------------------------------------------------
-# Project Media Admin
-# -------------------------------------------------
+    inlines = [ProjectMediaInline]
+
+
+# =================================================
+# PROJECT MEDIA ADMIN
+# =================================================
 
 @admin.register(ProjectMedia)
 class ProjectMediaAdmin(admin.ModelAdmin):
@@ -76,9 +85,9 @@ class ProjectMediaAdmin(admin.ModelAdmin):
     readonly_fields = ("created",)
 
 
-# -------------------------------------------------
-# Testimonial Admin
-# -------------------------------------------------
+# =================================================
+# TESTIMONIAL ADMIN
+# =================================================
 
 @admin.register(Testimonial)
 class TestimonialAdmin(admin.ModelAdmin):
@@ -89,9 +98,9 @@ class TestimonialAdmin(admin.ModelAdmin):
     ordering = ("-created",)
 
 
-# -------------------------------------------------
-# Service Admin
-# -------------------------------------------------
+# =================================================
+# SERVICE ADMIN
+# =================================================
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
@@ -100,9 +109,9 @@ class ServiceAdmin(admin.ModelAdmin):
     ordering = ("order",)
 
 
-# -------------------------------------------------
-# Contact Request Admin
-# -------------------------------------------------
+# =================================================
+# CONTACT REQUEST ADMIN
+# =================================================
 
 @admin.register(ContactRequest)
 class ContactRequestAdmin(admin.ModelAdmin):
