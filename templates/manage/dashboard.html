@@ -5,52 +5,75 @@
 
 {% block content %}
 
-<section class="container" style="margin-top: 80px;">
-  <h1>Dashboard</h1>
-  <p class="muted">Overview of your platform activity</p>
+<section class="dashboard-hero">
+  <div class="container">
+    <h1>Studio Dashboard</h1>
+    <p class="muted">
+      Monitor projects, testimonials, and client engagement in one place.
+    </p>
+  </div>
 </section>
 
-<section class="container" style="margin-top: 40px;">
-  <div class="cards-grid">
+<!-- ===============================
+     STATS SECTION
+================================ -->
+<section class="container" style="margin-top: 60px;">
+  <div class="dashboard-stats">
 
-<div class="card">
-  <h3>Projects</h3>
-  <p>Total: {{ projects_total }}</p>
-  <p class="muted">Featured: {{ featured_projects }}</p>
-</div>
+    <div class="stat-card">
+      <div class="stat-icon">🎬</div>
+      <div>
+        <h3>{{ projects_total }}</h3>
+        <p>Total Projects</p>
+        <span class="muted">Featured: {{ featured_projects }}</span>
+      </div>
+    </div>
 
-<div class="card">
-  <h3>Testimonials</h3>
-  <p>Total: {{ testimonials_total }}</p>
-  <p class="muted">Visible: {{ testimonials_visible }}</p>
-</div>
+    <div class="stat-card">
+      <div class="stat-icon">💬</div>
+      <div>
+        <h3>{{ testimonials_total }}</h3>
+        <p>Testimonials</p>
+        <span class="muted">Visible: {{ testimonials_visible }}</span>
+      </div>
+    </div>
 
-<div class="card">
-  <h3>Messages</h3>
-  <p>Pending: {{ messages_pending }}</p>
-</div>
+    <div class="stat-card">
+      <div class="stat-icon">📩</div>
+      <div>
+        <h3>{{ messages_pending }}</h3>
+        <p>Pending Messages</p>
+      </div>
+    </div>
 
   </div>
 </section>
 
-<section class="container" style="margin-top: 60px;">
+
+<!-- ===============================
+     QUICK ACTIONS
+================================ -->
+<section class="container" style="margin-top: 80px;">
   <h2>Quick Actions</h2>
 
-  <div class="cards-grid" style="margin-top: 20px;">
+  <div class="dashboard-actions">
 
-    <a href="{% url 'greenshan:manage_list' %}" class="card">
+    <a href="{% url 'greenshan:manage_list' %}" class="action-card">
+      <div class="action-icon">📁</div>
       <h3>Manage Projects</h3>
-      <p>View, edit, or delete portfolio projects</p>
+      <p>Edit, upload, or organize portfolio projects.</p>
     </a>
 
-    <a href="{% url 'greenshan:manage_messages' %}" class="card">
+    <a href="{% url 'greenshan:manage_messages' %}" class="action-card">
+      <div class="action-icon">✉️</div>
       <h3>View Messages</h3>
-      <p>Read and respond to contact messages</p>
+      <p>Check new client inquiries and respond quickly.</p>
     </a>
 
-    <a href="{% url 'greenshan:manage_testimonials' %}" class="card">
+    <a href="{% url 'greenshan:manage_testimonials' %}" class="action-card">
+      <div class="action-icon">⭐</div>
       <h3>Testimonials</h3>
-      <p>Manage client feedback and reviews</p>
+      <p>Control visibility and manage client feedback.</p>
     </a>
 
   </div>

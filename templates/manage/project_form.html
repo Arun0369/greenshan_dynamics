@@ -1,80 +1,123 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Project Form | Admin{% endblock %}
+{% block title %}
+  {% if form.instance.pk %}
+    Edit Project | GreenShan Admin
+  {% else %}
+    Add Project | GreenShan Admin
+  {% endif %}
+{% endblock %}
 
 {% block content %}
 
-<section class="container" style="margin-top: 80px;">
-  <h1>
-    {% if form.instance.pk %}
-      Edit Project
-    {% else %}
-      Add New Project
-    {% endif %}
-  </h1>
+<section class="admin-header">
+  <div class="container">
+    <h1>
+      {% if form.instance.pk %}
+        Edit Project
+      {% else %}
+        Create New Project
+      {% endif %}
+    </h1>
+    <p class="muted">
+      Manage project details, visuals, and showcase content.
+    </p>
+  </div>
 </section>
 
-<section class="container" style="margin-top: 40px; max-width: 900px;">
 
-  <form method="post" enctype="multipart/form-data" class="card">
+<section class="container admin-form-container">
+
+  <form method="post" enctype="multipart/form-data" class="admin-card">
     {% csrf_token %}
 
-    <!-- =======================
-         PROJECT MAIN FORM
-    ======================== -->
-    {% for field in form %}
-      <div class="form-group">
-        <label for="{{ field.id_for_label }}">
-          {{ field.label }}
-        </label>
+    <!-- ===================================== -->
+    <!-- PROJECT DETAILS -->
+    <!-- ===================================== -->
 
-        {{ field }}
+    <div class="admin-section">
+      <h3 class="section-title">Project Details</h3>
 
-        {% if field.errors %}
-          <div class="form-error">
-            {{ field.errors }}
-          </div>
-        {% endif %}
-      </div>
-    {% endfor %}
-
-    <hr style="margin:40px 0;">
-
-    <!-- =======================
-         PROJECT MEDIA FORMSET
-    ======================== -->
-    <h3>Project Media</h3>
-
-    {{ formset.management_form }}
-
-    {% for media_form in formset %}
-      <div class="card" style="margin-bottom:20px; padding:15px;">
-
-        {% for field in media_form.visible_fields %}
+      <div class="form-grid">
+        {% for field in form %}
           <div class="form-group">
-            <label>{{ field.label }}</label>
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
+
             {{ field }}
+
+            {% if field.help_text %}
+              <small class="form-help">{{ field.help_text }}</small>
+            {% endif %}
+
             {% if field.errors %}
-              <div class="form-error">{{ field.errors }}</div>
+              <div class="form-error">
+                {{ field.errors }}
+              </div>
             {% endif %}
           </div>
         {% endfor %}
-
-        {% if media_form.instance.pk %}
-          <div class="form-group">
-            {{ media_form.DELETE }} Delete this media
-          </div>
-        {% endif %}
       </div>
-    {% endfor %}
+    </div>
 
-    <!-- =======================
-         ACTIONS
-    ======================== -->
-    <div style="margin-top: 30px; display: flex; gap: 15px;">
-      <button type="submit" class="btn">
-        Save Project
+
+    <!-- ===================================== -->
+    <!-- MEDIA SECTION -->
+    <!-- ===================================== -->
+
+    <div class="admin-section">
+      <h3 class="section-title">Project Media</h3>
+      <p class="muted small">
+        Upload up to 10 images, videos, or documents for this project.
+      </p>
+
+      {{ formset.management_form }}
+
+      <div class="media-grid">
+        {% for media_form in formset %}
+          <div class="media-card">
+
+            {% for field in media_form.visible_fields %}
+              <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+
+                {% if field.errors %}
+                  <div class="form-error">
+                    {{ field.errors }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            {% if media_form.instance.pk %}
+              <div class="delete-option">
+                <label>
+                  {{ media_form.DELETE }}
+                  Remove this media
+                </label>
+              </div>
+            {% endif %}
+
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+
+    <!-- ===================================== -->
+    <!-- ACTION BUTTONS -->
+    <!-- ===================================== -->
+
+    <div class="admin-actions">
+      <button type="submit" class="btn primary">
+        {% if form.instance.pk %}
+          Update Project
+        {% else %}
+          Create Project
+        {% endif %}
       </button>
 
       <a href="{% url 'greenshan:manage_list' %}" class="btn ghost">

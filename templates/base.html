@@ -24,24 +24,6 @@
 
 <body>
 
-<!-- Skip link -->
-<a href="#main-content" class="skip-to-content">Skip to main content</a>
-
-<!-- Loading Overlay -->
-<div id="loading" class="loading-overlay">
-    <div class="loading-spinner">
-        <span class="spinner-dot"></span>
-        <span class="spinner-dot"></span>
-        <span class="spinner-dot"></span>
-    </div>
-</div>
-
-<!-- Theme Toggle -->
-<button class="theme-toggle" aria-label="Toggle theme">
-    <span class="theme-icon sun">☀️</span>
-    <span class="theme-icon moon">🌙</span>
-</button>
-
 <!-- HEADER -->
 <header class="site-header">
     <div class="container header-inner">
@@ -52,78 +34,66 @@
             <span class="logo-text">GreenShan Dynamics</span>
         </a>
 
-        <!-- Mobile Nav Toggle -->
-        <button class="nav-toggle"
-                id="nav-toggle"
-                aria-expanded="false"
-                aria-controls="main-nav"
-                aria-label="Toggle navigation">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </button>
-
         <!-- Navigation -->
-        <nav id="main-nav" class="main-nav" aria-hidden="true">
-<ul>
-  <!-- Public links -->
-  <li>
-    <a href="{% url 'greenshan:home' %}" class="nav-link">Home</a>
-  </li>
-  <li>
-    <a href="{% url 'greenshan:portfolio' %}" class="nav-link">Portfolio</a>
-  </li>
-  <li>
-    <a href="{% url 'greenshan:services' %}" class="nav-link">Services</a>
-  </li>
-  <li>
-    <a href="{% url 'greenshan:contact' %}" class="nav-link">Contact</a>
-  </li>
+        <nav class="main-nav">
+            <ul>
 
-  <!-- STAFF ONLY -->
-  {% if user.is_authenticated and user.is_staff %}
-    <li>
-      <a href="{% url 'greenshan:dashboard' %}" class="nav-link btn-admin">
-        Dashboard
-      </a>
-    </li>
-  {% endif %}
+                <!-- PUBLIC LINKS -->
+                <li>
+                    <a href="{% url 'greenshan:home' %}" class="nav-link">Home</a>
+                </li>
+                <li>
+                    <a href="{% url 'greenshan:portfolio' %}" class="nav-link">Portfolio</a>
+                </li>
+                <li>
+                    <a href="{% url 'greenshan:services' %}" class="nav-link">Services</a>
+                </li>
+                <li>
+                    <a href="{% url 'greenshan:contact' %}" class="nav-link">Contact</a>
+                </li>
 
-  <!-- AUTH ACTIONS -->
-  {% if user.is_authenticated %}
-    <li>
-      <a href="{% url 'logout' %}" class="nav-link">
-        Logout
-      </a>
-    </li>
-  {% else %}
-    <li>
-      <a href="{% url 'login' %}" class="nav-link">
-        Login
-      </a>
-    </li>
-  {% endif %}
-</ul>
+                <!-- STAFF DASHBOARD -->
+                {% if user.is_authenticated and user.is_staff %}
+                <li>
+                    <a href="{% url 'greenshan:dashboard' %}" class="nav-link btn-admin">
+                        Dashboard
+                    </a>
+                </li>
+                {% endif %}
 
+                <!-- LOGOUT (ONLY IF LOGGED IN) -->
+                {% if user.is_authenticated %}
+                <li>
+                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="nav-link"
+                                style="background:none;border:none;cursor:pointer;">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+                {% endif %}
+
+            </ul>
         </nav>
 
     </div>
 </header>
 
-<!-- Toast Messages -->
+<!-- DJANGO MESSAGES -->
 {% if messages %}
 <div class="messages-container">
     {% for message in messages %}
-    <div class="toast {{ message.tags }}" role="alert" aria-live="polite">
-        <span>{{ message }}</span>
-        <button class="toast-close" aria-label="Close">&times;</button>
+    <div class="toast {{ message.tags }}">
+        {{ message }}
     </div>
     {% endfor %}
 </div>
 {% endif %}
 
 <!-- MAIN CONTENT -->
-<main id="main-content">
+<main>
     {% block content %}{% endblock %}
 </main>
 
@@ -160,8 +130,6 @@
         © {% now "Y" %} GreenShan Dynamics. All rights reserved.
     </div>
 </footer>
-
-
 
 {% block extra_js %}{% endblock %}
 
