@@ -46,6 +46,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 
@@ -109,14 +110,15 @@ USE_TZ = True
 # STATIC FILES
 # =================================================
 
-STATIC_URL = "/static/"
+import os
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    os.path.join(BASE_DIR, 'static'),
 ]
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 # =================================================
 # MEDIA FILES
