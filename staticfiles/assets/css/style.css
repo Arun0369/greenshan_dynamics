@@ -1,0 +1,525 @@
+/* =========================================================
+   GREENSHAN DYNAMICS — PREMIUM DESIGN SYSTEM
+========================================================= */
+
+:root {
+  /* COLORS */
+  --bg: #0b0f0d;
+  --surface: #121814;
+  --surface-2: #171f1a;
+  --glass: rgba(255,255,255,0.04);
+
+  --primary: #00d68f;
+  --primary-dark: #00b377;
+  --primary-soft: rgba(0,214,143,0.15);
+  --accent: #ff6b6b;
+
+  --text: #eaf5ee;
+  --text-muted: #8f9b94;
+
+  /* SPACING */
+  --space-xs: 6px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 40px;
+  --space-xl: 80px;
+
+  /* RADIUS */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* SHADOW */
+  --shadow-sm: 0 8px 25px rgba(0,0,0,.25);
+  --shadow-lg: 0 30px 60px rgba(0,0,0,.4);
+}
+
+/* =========================================================
+   RESET & BASE
+========================================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--space-md);
+}
+
+h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+h2 { font-size: clamp(2rem, 4vw, 3rem); }
+h3 { font-size: 1.5rem; }
+
+p { margin-bottom: var(--space-md); }
+.muted { color: var(--text-muted); }
+
+/* =========================================================
+   LAYOUT & GRIDS
+========================================================= */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.container-narrow {
+  max-width: 800px;
+}
+
+.cards-grid, .portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--glass);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* =========================================================
+   NEW: SPACING & UTILITY CLASSES (Replaces Inline Styles)
+========================================================= */
+.mt-20 { margin-top: 20px; }
+.mt-40 { margin-top: 40px; }
+.mt-60 { margin-top: clamp(40px, 5vw, 60px); }
+.mt-80 { margin-top: clamp(50px, 8vw, 80px); }
+.mt-100 { margin-top: clamp(60px, 10vw, 100px); }
+.mt-120 { margin-top: clamp(80px, 12vw, 120px); }
+
+.text-center, .center { text-align: center; }
+.max-w-700 { max-width: 700px; margin-left: auto; margin-right: auto; }
+.max-w-900 { max-width: 900px; margin-left: auto; margin-right: auto; }
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--bg);
+  padding: 14px 28px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  font-family: inherit;
+}
+
+.btn:hover {
+  background: var(--primary-dark);
+  color: var(--bg);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px var(--primary-soft);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--glass);
+}
+
+.btn.ghost:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: none;
+}
+
+.btn.danger { background: var(--accent); color: var(--bg); }
+.btn.danger:hover { background: #ff4d4d; box-shadow: 0 10px 20px rgba(255,107,107,0.2); }
+.btn.small { padding: 8px 16px; font-size: 0.9rem; }
+
+/* =========================================================
+   NEW: PREMIUM FORM INPUTS (Glowing Focus State)
+========================================================= */
+input, textarea, select {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--glass);
+  color: var(--text);
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  margin-bottom: var(--space-md);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+  background: var(--surface);
+}
+
+label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   HEADER & NAVIGATION
+========================================================= */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(11, 15, 13, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--glass);
+  padding: 20px 0;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.main-nav ul {
+  display: flex;
+  gap: var(--space-md);
+  list-style: none;
+  align-items: center;
+}
+
+.main-nav a {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.main-nav a:hover {
+  color: var(--primary);
+}
+
+/* Mobile Nav Toggle */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.hamburger {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  position: relative;
+  transition: background 0.3s;
+}
+
+.hamburger::before, .hamburger::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--text);
+  left: 0;
+  transition: transform 0.3s;
+}
+.hamburger::before { top: -8px; }
+.hamburger::after { top: 8px; }
+
+@media (max-width: 768px) {
+  .nav-toggle { display: block; z-index: 1001; }
+  
+  .main-nav {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .main-nav[aria-hidden="false"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .main-nav ul {
+    flex-direction: column;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+}
+
+/* =========================================================
+   NEW: VIDEO & MEDIA WRAPPERS
+========================================================= */
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  background-color: var(--surface-2);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.video-wrapper video,
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: cover;
+}
+
+/* =========================================================
+   NEW: PREMIUM PORTFOLIO EFFECTS
+========================================================= */
+.portfolio-item {
+  position: relative;
+  display: block;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.portfolio-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.portfolio-item:hover img {
+  transform: scale(1.05);
+}
+
+.portfolio-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(11, 15, 13, 0.95) 0%, rgba(11, 15, 13, 0.1) 100%);
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-lg);
+  transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.portfolio-item:hover .portfolio-overlay {
+  opacity: 1;
+}
+
+.portfolio-content h3 {
+  margin-bottom: 5px;
+  color: var(--text);
+}
+
+.portfolio-category {
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* The Cinematic Play Button */
+.portfolio-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -40%) scale(0.8);
+  width: 60px;
+  height: 60px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 0 20px var(--primary-soft);
+  color: var(--bg);
+  z-index: 2;
+}
+
+.portfolio-item:hover .portfolio-play-btn {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* =========================================================
+   NEW: SVG ICON SIZING UTILITIES
+========================================================= */
+.icon {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon-lg {
+  width: 48px;
+  height: 48px;
+  color: var(--primary);
+  margin-bottom: var(--space-sm);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: var(--space-sm);
+}
+
+/* =========================================================
+   DASHBOARD / ADMIN TABLES
+========================================================= */
+.manage-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.manage-table th, .manage-table td {
+  padding: 15px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--glass);
+}
+
+.manage-table th {
+  background: var(--surface-2);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.manage-table tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+/* =========================================================
+   TOAST MESSAGES
+========================================================= */
+.messages-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+}
+
+.toast {
+  background: var(--surface);
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 10px;
+}
+
+.toast.success { border-left: 4px solid var(--primary); }
+.toast.error { border-left: 4px solid var(--accent); }
+
+/* =========================================================
+   FOOTER
+========================================================= */
+.site-footer {
+  background: #050806;
+  padding: 60px 0 30px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.footer-bottom {
+  margin-top: 30px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+#loading {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--surface-2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

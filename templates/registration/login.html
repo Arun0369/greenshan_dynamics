@@ -1,48 +1,60 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Login — GreenShan Dynamics{% endblock %}
+{% block title %}Login | GreenShan Dynamics{% endblock %}
 
 {% block content %}
-<section class="auth-section">
-  <div class="container auth-container">
-
-    <header class="auth-header">
-      <h1>Login</h1>
+<section class="container mt-120" style="margin-bottom: 120px; display: flex; justify-content: center; align-items: center; min-height: 50vh;">
+  
+  <div class="card" style="width: 100%; max-width: 420px; padding: 40px; background: linear-gradient(145deg, var(--surface), var(--surface-2));">
+    
+    <header style="text-align: center; margin-bottom: 30px;">
+      <i class="ph ph-lock-key" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+      <h1 style="font-size: 2rem; margin-bottom: 5px;">Staff Login</h1>
       <p class="muted">
         Access your dashboard to manage projects and content.
       </p>
     </header>
 
-    <form method="post" class="auth-form" novalidate>
+    <form method="post" novalidate>
       {% csrf_token %}
 
       {% if form.non_field_errors %}
-        <div class="form-error">
-          {{ form.non_field_errors }}
+        <div class="toast error" style="margin-bottom: 20px; padding: 10px 15px; font-size: 0.9rem;">
+          <i class="ph ph-warning-circle" style="vertical-align: middle; margin-right: 5px;"></i>
+          {{ form.non_field_errors|striptags }}
         </div>
       {% endif %}
 
       {% for field in form %}
-        <div class="form-group">
-          <label for="{{ field.id_for_label }}">
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted);">
             {{ field.label }}
           </label>
+          
           {{ field }}
 
           {% if field.errors %}
-            <div class="form-error">
-              {{ field.errors }}
+            <div style="color: var(--accent); font-size: 0.85rem; margin-top: 5px; display: flex; align-items: center; gap: 5px;">
+              <i class="ph ph-warning"></i> {{ field.errors|striptags }}
             </div>
           {% endif %}
         </div>
       {% endfor %}
 
-      <div class="form-actions">
-        <button type="submit" class="btn">
-          Login
+      <div style="margin-top: 30px;">
+        <button type="submit" class="btn" style="width: 100%; justify-content: center;">
+          Secure Login <i class="ph ph-sign-in" style="margin-left: 8px;"></i>
         </button>
       </div>
+      
     </form>
+
+    <div style="margin-top: 20px; text-align: center;">
+      <a href="{% url 'greenshan:home' %}" class="muted" style="font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
+        <i class="ph ph-arrow-left"></i> Return to site
+      </a>
+    </div>
 
   </div>
 </section>

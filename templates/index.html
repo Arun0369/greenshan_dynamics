@@ -3,27 +3,25 @@
 
 {% block title %}Home | GreenShan Dynamics{% endblock %}
 {% block meta_description %}
-GreenShan Dynamics – Professional visual media, video editing, and storytelling services.
+GreenShan Dynamics – Professional visual media, cinematic video editing, motion graphics, and storytelling services by Shanthosh C.E.
 {% endblock %}
 
 {% block content %}
 
-<!-- HERO SECTION -->
-<section class="hero">
+<section class="hero" style="padding: 120px 0 80px; text-align: center;">
   <div class="container">
-    <h1>
-      Sustainable<br>
+    <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.2; margin-bottom: 20px;">
+      Cinematic<br>
       <span style="color: var(--primary);">Visual Storytelling</span>
     </h1>
 
-    <p>
-      We craft professional visual media, cinematic edits, and creative storytelling
-      that elevate brands and ideas.
+    <p class="muted" style="max-width: 600px; margin: 0 auto; font-size: 1.1rem; line-height: 1.6;">
+      We craft professional visual media, high-end video edits, and creative motion graphics that elevate brands and captivate audiences.
     </p>
 
-    <div style="margin-top: 30px;">
+    <div style="margin-top: 40px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
       <a href="{% url 'greenshan:portfolio' %}" class="btn">
-        View Portfolio
+        <i class="ph ph-play-circle" style="margin-right: 8px; font-size: 1.2em;"></i> View Showreel
       </a>
       <a href="{% url 'greenshan:contact' %}" class="btn ghost">
         Start a Project
@@ -32,85 +30,94 @@ GreenShan Dynamics – Professional visual media, video editing, and storytellin
   </div>
 </section>
 
-<!-- SERVICES PREVIEW -->
 <section class="container" style="margin-top: 80px;">
-  <h2>What We Do</h2>
-
-  <div class="cards-grid">
-    <div class="card">
-      <h3>Video Editing</h3>
-      <p>
-        Professional post-production with clean cuts, cinematic flow,
-        and strong storytelling.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>Motion Graphics</h3>
-      <p>
-        Eye-catching animations and motion visuals that bring ideas to life.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>Color Grading</h3>
-      <p>
-        Advanced color correction to set mood, tone, and cinematic quality.
-      </p>
-    </div>
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+    <h2>What We Do</h2>
+    <a href="{% url 'greenshan:services' %}" class="btn ghost small" style="display: flex; align-items: center; gap: 5px;">
+      View All <i class="ph ph-arrow-right"></i>
+    </a>
   </div>
 
-  <div style="margin-top: 40px;">
-    <a href="{% url 'greenshan:services' %}" class="btn ghost">
-      View All Services
-    </a>
+  <div class="cards-grid">
+    <div class="card" style="padding: 40px 30px; text-align: center;">
+      <i class="ph ph-film-strip" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+      <h3>Video Editing</h3>
+      <p class="muted" style="margin-top: 10px;">
+        Professional post-production with clean cuts, cinematic flow, and strong narrative storytelling.
+      </p>
+    </div>
+
+    <div class="card" style="padding: 40px 30px; text-align: center;">
+      <i class="ph ph-magic-wand" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+      <h3>Motion Graphics</h3>
+      <p class="muted" style="margin-top: 10px;">
+        Eye-catching animations, kinetic typography, and motion visuals that bring ideas to life.
+      </p>
+    </div>
+
+    <div class="card" style="padding: 40px 30px; text-align: center;">
+      <i class="ph ph-palette" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+      <h3>Color Grading</h3>
+      <p class="muted" style="margin-top: 10px;">
+        Advanced color correction to set the exact mood, tone, and cinematic quality for your footage.
+      </p>
+    </div>
   </div>
 </section>
 
-<!-- PORTFOLIO PREVIEW -->
-<!-- PORTFOLIO PREVIEW -->
-<section class="container" style="margin-top: 100px;">
+<section class="container" style="margin-top: 120px;">
   <h2>Featured Projects</h2>
+  <p class="muted" style="margin-top: 10px; margin-bottom: 40px;">A selection of our latest and greatest visual work.</p>
 
   <div class="portfolio-grid">
     {% for project in featured_projects %}
-      <div class="card">
+      <div class="card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+        
         {% if project.cover %}
-          <img src="{{ project.cover.url }}" alt="{{ project.title }}">
+          <img src="{{ project.cover.url }}" alt="{{ project.title }}" loading="lazy" style="width: 100%; height: 240px; object-fit: cover; border-bottom: 1px solid var(--glass);">
+        {% else %}
+          <div style="width: 100%; height: 240px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--glass);">
+            <i class="ph ph-image" style="font-size: 3rem; color: var(--glass);"></i>
+          </div>
         {% endif %}
 
-        <h3>{{ project.title }}</h3>
-        <p>{{ project.description|truncatechars:100 }}</p>
+        <div style="padding: 25px; flex-grow: 1; display: flex; flex-direction: column;">
+          <h3 style="margin-top: 0; margin-bottom: 10px;">{{ project.title }}</h3>
+          <p class="muted" style="flex-grow: 1; margin-bottom: 20px;">{{ project.description|truncatechars:90 }}</p>
 
-        <a href="{% url 'greenshan:project_detail' project.slug %}"
-           class="btn ghost">
-          View Project
-        </a>
+          <a href="{% url 'greenshan:project_detail' project.slug %}" class="btn ghost small" style="width: 100%; justify-content: center;">
+            View Project
+          </a>
+        </div>
       </div>
     {% empty %}
-      <p class="muted">No featured projects yet.</p>
+      <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+        <i class="ph ph-video-camera-slash" style="font-size: 3rem; color: var(--glass); margin-bottom: 15px;"></i>
+        <h3>No projects yet</h3>
+        <p class="muted">Check back soon for our latest featured showreels and edits.</p>
+      </div>
     {% endfor %}
   </div>
 
-  <div style="margin-top: 40px;">
+  <div style="margin-top: 50px; text-align: center;">
     <a href="{% url 'greenshan:portfolio' %}" class="btn">
-      View Full Portfolio
+      <i class="ph ph-squares-four" style="margin-right: 8px;"></i> View Full Portfolio
     </a>
   </div>
 </section>
 
+<section class="container" style="margin-top: 140px; margin-bottom: 80px; text-align: center;">
+  <div class="card" style="padding: 60px 20px; background: linear-gradient(145deg, var(--surface), var(--surface-2)); border: 1px solid var(--primary-soft);">
+    <h2 style="font-size: 2.2rem; margin-bottom: 15px;">Let’s Build Something Great</h2>
+    <p class="muted" style="max-width: 500px; margin: 0 auto;">
+      Have a raw vision or a project in mind? Let’s collaborate and bring it to life with professional post-production.
+    </p>
 
-<!-- CALL TO ACTION -->
-<section class="container" style="margin-top: 120px; text-align: center;">
-  <h2>Let’s Build Something Great</h2>
-  <p class="muted">
-    Have an idea or project in mind? Let’s collaborate and bring it to life.
-  </p>
-
-  <div style="margin-top: 30px;">
-    <a href="{% url 'greenshan:contact' %}" class="btn">
-      Contact Us
-    </a>
+    <div style="margin-top: 30px;">
+      <a href="{% url 'greenshan:contact' %}" class="btn" style="padding: 14px 30px; font-size: 1.1rem;">
+        <i class="ph ph-paper-plane-tilt" style="margin-right: 8px;"></i> Contact Us
+      </a>
+    </div>
   </div>
 </section>
 

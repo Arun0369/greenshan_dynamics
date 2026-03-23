@@ -8,15 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{% block meta_description %}Professional visual media & storytelling{% endblock %}">
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- Main CSS -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
 
-    <!-- Main JS -->
     <script defer src="{% static 'assets/js/main.js' %}"></script>
 
     {% block extra_css %}{% endblock %}
@@ -24,118 +23,93 @@
 
 <body>
 
-<!-- Skip link -->
-<a href="#main-content" class="skip-to-content">Skip to main content</a>
-
-<!-- Loading Overlay -->
-<div id="loading" class="loading-overlay">
-    <div class="loading-spinner">
-        <span class="spinner-dot"></span>
-        <span class="spinner-dot"></span>
-        <span class="spinner-dot"></span>
-    </div>
+<div id="loading">
+    <div class="spinner"></div>
 </div>
 
-<!-- Theme Toggle -->
-<button class="theme-toggle" aria-label="Toggle theme">
-    <span class="theme-icon sun">☀️</span>
-    <span class="theme-icon moon">🌙</span>
-</button>
-
-<!-- HEADER -->
 <header class="site-header">
     <div class="container header-inner">
 
-        <!-- Logo -->
-        <a href="{% url 'greenshan:home' %}" class="logo">
-            <img src="{% static 'assets/img/logo.png' %}" alt="GreenShan Logo">
-            <span class="logo-text">GreenShan Dynamics</span>
+        <a href="{% url 'greenshan:home' %}" class="logo" style="display: flex; align-items: center; gap: 10px;">
+            <img src="{% static 'assets/img/logo.png' %}" alt="GreenShan Logo" style="height: 40px;">
+            <span class="logo-text" style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--text);">GreenShan Dynamics</span>
         </a>
 
-        <!-- Mobile Nav Toggle -->
-        <button class="nav-toggle"
-                id="nav-toggle"
-                aria-expanded="false"
-                aria-controls="main-nav"
-                aria-label="Toggle navigation">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
+        <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="hamburger"></span>
         </button>
 
-        <!-- Navigation -->
-        <nav id="main-nav" class="main-nav" aria-hidden="true">
-<ul>
-  <!-- Public links -->
-  <li>
-    <a href="{% url 'greenshan:home' %}" class="nav-link">Home</a>
-  </li>
-  <li>
-    <a href="{% url 'greenshan:portfolio' %}" class="nav-link">Portfolio</a>
-  </li>
-  <li>
-    <a href="{% url 'greenshan:services' %}" class="nav-link">Services</a>
-  </li>
-  <li>
-    <a href="{% url 'greenshan:contact' %}" class="nav-link">Contact</a>
-  </li>
+        <nav class="main-nav" id="main-nav" aria-hidden="true">
+            <ul>
+                <li><a href="{% url 'greenshan:home' %}" class="nav-link">Home</a></li>
+                <li><a href="{% url 'greenshan:portfolio' %}" class="nav-link">Portfolio</a></li>
+                <li><a href="{% url 'greenshan:services' %}" class="nav-link">Services</a></li>
+                <li><a href="{% url 'greenshan:contact' %}" class="btn small">Contact</a></li>
 
-  <!-- STAFF ONLY -->
-  {% if user.is_authenticated and user.is_staff %}
-    <li>
-      <a href="{% url 'greenshan:dashboard' %}" class="nav-link btn-admin">
-        Dashboard
-      </a>
-    </li>
-  {% endif %}
+                {% if user.is_authenticated and user.is_staff %}
+                <li>
+                    <a href="{% url 'greenshan:dashboard' %}" class="btn ghost small">
+                        <i class="ph ph-squares-four" style="margin-right: 5px;"></i> Dashboard
+                    </a>
+                </li>
+                {% endif %}
 
-  <!-- AUTH ACTIONS -->
-  {% if user.is_authenticated %}
-    <li>
-      <a href="{% url 'logout' %}" class="nav-link">
-        Logout
-      </a>
-    </li>
-  {% else %}
-    <li>
-      <a href="{% url 'login' %}" class="nav-link">
-        Login
-      </a>
-    </li>
-  {% endif %}
-</ul>
-
+                {% if user.is_authenticated %}
+                <li>
+                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn danger small">
+                            <i class="ph ph-sign-out" style="margin-right: 5px;"></i> Logout
+                        </button>
+                    </form>
+                </li>
+                {% endif %}
+            </ul>
         </nav>
 
     </div>
 </header>
 
-<!-- Toast Messages -->
 {% if messages %}
 <div class="messages-container">
     {% for message in messages %}
-    <div class="toast {{ message.tags }}" role="alert" aria-live="polite">
-        <span>{{ message }}</span>
-        <button class="toast-close" aria-label="Close">&times;</button>
+    <div class="toast {{ message.tags }}">
+        {{ message }}
+        <button class="toast-close" style="background:none; border:none; color:inherit; cursor:pointer; margin-left:15px;">
+            <i class="ph ph-x"></i>
+        </button>
     </div>
     {% endfor %}
 </div>
 {% endif %}
 
-<!-- MAIN CONTENT -->
-<main id="main-content">
+<main>
     {% block content %}{% endblock %}
 </main>
 
-<!-- FOOTER -->
-<footer class="site-footer">
+<footer class="site-footer mt-100">
     <div class="container footer-grid">
 
         <div>
-            <h3>GreenShan Dynamics</h3>
+            <h3 style="margin-bottom: 10px;">GreenShan Dynamics</h3>
             <p class="muted">
                 Sustainable visual media & professional storytelling.
             </p>
+            
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <a href="https://www.youtube.com/@c.e.shanthosh" target="_blank" aria-label="YouTube">
+                    <i class="ph ph-youtube-logo" style="font-size: 1.8rem;"></i>
+                </a>
+                <a href="https://vimeo.com/user210433804" target="_blank" aria-label="Vimeo">
+                    <i class="ph ph-vimeo-logo" style="font-size: 1.8rem;"></i>
+                </a>
+                <a href="https://www.instagram.com/greenshan_dynamics/" target="_blank" aria-label="Instagram">
+                    <i class="ph ph-instagram-logo" style="font-size: 1.8rem;"></i>
+                </a>
+                <a href="https://in.linkedin.com/in/shanthosh-c-e-8aa9b42b2" target="_blank" aria-label="LinkedIn">
+                    <i class="ph ph-linkedin-logo" style="font-size: 1.8rem;"></i>
+                </a>
+            </div>
         </div>
 
         <div>
@@ -150,18 +124,23 @@
 
         <div>
             <h4>Contact</h4>
-            <p>📧 contact@greenshan.com</p>
-            <p>📞 +1 555 123 4567</p>
+            <p style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <i class="ph ph-envelope-simple" style="color: var(--primary); font-size: 1.2rem;"></i> 
+                contact@greenshan.com
+            </p>
+            <p style="display: flex; align-items: center; gap: 8px;">
+                <i class="ph ph-phone" style="color: var(--primary); font-size: 1.2rem;"></i> 
+                +1 555 123 4567
+            </p>
         </div>
 
     </div>
 
-    <div class="footer-bottom">
+    <div class="container footer-bottom">
+        <hr style="border-color: var(--glass); margin-bottom: 20px;">
         © {% now "Y" %} GreenShan Dynamics. All rights reserved.
     </div>
 </footer>
-
-
 
 {% block extra_js %}{% endblock %}
 
