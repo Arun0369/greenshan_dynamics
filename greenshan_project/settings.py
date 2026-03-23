@@ -1,5 +1,6 @@
 from pathlib import Path
-import os 
+import os
+
 # =================================================
 # BASE DIRECTORY
 # =================================================
@@ -8,15 +9,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # =================================================
-# SECURITY (DEMO SAFE)
+# SECURITY
 # =================================================
 
-# ⚠️ For demo only. Must be changed in production.
-SECRET_KEY = "dev-secret-key-change-later"
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-later")
 
-DEBUG = True
+# ✅ IMPORTANT: Turn OFF in production
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # =================================================
@@ -41,12 +42,15 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+
+    # ✅ WhiteNoise should be right after SecurityMiddleware
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 
@@ -55,7 +59,6 @@ MIDDLEWARE = [
 # =================================================
 
 ROOT_URLCONF = "greenshan_project.urls"
-
 WSGI_APPLICATION = "greenshan_project.wsgi.application"
 
 
@@ -66,9 +69,7 @@ WSGI_APPLICATION = "greenshan_project.wsgi.application"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            BASE_DIR / "templates",
-        ],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -83,7 +84,7 @@ TEMPLATES = [
 
 
 # =================================================
-# DATABASE (DEMO SAFE)
+# DATABASE
 # =================================================
 
 DATABASES = {
@@ -99,7 +100,6 @@ DATABASES = {
 # =================================================
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
@@ -110,15 +110,17 @@ USE_TZ = True
 # STATIC FILES
 # =================================================
 
-import os
+STATIC_URL = "/static/"
 
-STATIC_URL = '/static/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / "static",
 ]
+
+# ✅ WhiteNoise optimization
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # =================================================
 # MEDIA FILES
@@ -129,11 +131,11 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 # =================================================
-# AUTH & DEFAULTS
+# AUTH
 # =================================================
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/manage/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
-
