@@ -36,17 +36,19 @@ def staff_required(view_func):
 # PUBLIC VIEWS
 # =========================================================
 
+from django.shortcuts import render
+from django.db import OperationalError
+from .models import Project
+
 def home(request):
-    services = Service.objects.order_by("order")
-    featured_projects = Project.objects.filter(featured=True)
-    return render(
-        request,
-        "index.html",
-        {
-            "services": services,
-            "featured_projects": featured_projects,
-        },
-    )
+    try:
+        featured_projects = Project.objects.all()
+    except OperationalError:
+        featured_projects = []
+
+    return render(request, "index.html", {
+        "featured_projects": featured_projects
+    })
 
 
 def about(request):
